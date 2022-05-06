@@ -88,7 +88,7 @@ if __name__ == '__main__':
     caseList = case_url
     )
 
-    # 123生成html报告
+    # 1234生成html报告
 
     with open("Decision_KKD.html", 'wb') as f:
         f.write(output.encode('utf-8'))
