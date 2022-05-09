@@ -48,7 +48,8 @@ def excel_field(field_code):
 # field_code =  'Veri_06'
 # print (excel_field(field_code))
 def app_excel_field(case_code):
-    app_xlsfile = os.getcwd() + '\\app_auto_case.xlsx'  # 打开指定路径中的xls文件
+    # app_xlsfile = os.getcwd() + '\\app_auto_case.xlsx'  # 打开指定路径中的xls文件
+    app_xlsfile = 'app_auto_case.xlsx'
     app_book = xlrd.open_workbook(app_xlsfile)
     app_sheet0 = app_book.sheet_by_index(1)
     app_row_n = app_sheet0.nrows - 1

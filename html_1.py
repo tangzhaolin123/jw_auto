@@ -35,6 +35,7 @@ class Template_mixin(object):
                     <th>预期结果</th>
                     <th>用例执行结果</th>
                     <th>失败原因</th>
+                    <th>备注</th>
                 </tr>
                 %(table_tr)s
                            
@@ -53,6 +54,7 @@ class Template_mixin(object):
             <td>%(case_expectedResult)s</td>
             <td>%(runresult)s</td>
             <td>%(reason)s</td>
+            <td>%(case_notes)s</td>
         </tr>"""
     ENDING_TMPL = """
         <div id='ending'>&nbsp;</div>
@@ -79,6 +81,7 @@ if __name__ == '__main__':
     case_expectedResult = '进入有看头APP的登录界面',
     runresult = '<font color="red">Fail</font>',
     reason = '失败或成功原因 http://tangjw.xyz/2022-04-29_14.05.32.png',
+    case_notes = '备注',
     )
 
     # table_td1 = html.TABLE_TMPL % dict(

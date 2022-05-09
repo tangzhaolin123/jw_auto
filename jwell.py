@@ -13,8 +13,8 @@ import json
 import requests
 import xlrd
 
-u = u1.connect('3f3582df')
-# u = u1.connect('0.0.0.0')
+# u = u1.connect('3f3582df')
+u = u1.connect('0.0.0.0')
 URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
 
 def message(content):
@@ -154,6 +154,7 @@ class Template_mixin(object):
                     <th>预期结果</th>
                     <th>用例执行结果</th>
                     <th>失败原因</th>
+                    <th>备注</th>
                 </tr>
                 %(table_tr)s
             </table>
@@ -171,21 +172,23 @@ class Template_mixin(object):
             <td>%(case_expectedResult)s</td>
             <td>%(runresult)s</td>
             <td>%(reason)s</td>
+            <td>%(case_notes)s</td>
         </tr>"""
 
 def app_excel_field(case_code):
-    app_xlsfile = os.getcwd() + '\\app_auto_case.xlsx'  # 打开指定路径中的xls文件
-    app_book = xlrd.open_workbook(app_xlsfile)
-    app_sheet0 = app_book.sheet_by_index(1)
-    app_row_n = app_sheet0.nrows - 1
+    # app_xlsfile = os.getcwd() + '\\app_auto_case.xlsx'  # 打开指定路径中的xls文件
+	app_xlsfile = 'app_auto_case.xlsx'
+	app_book = xlrd.open_workbook(app_xlsfile)
+	app_sheet0 = app_book.sheet_by_index(1)
+	app_row_n = app_sheet0.nrows - 1
     # print (app_row_n,app_sheet0.row_values(1)[3])
     # print (app_sheet0.col_values(0, start_rowx=1, end_rowx=None))
     # # print (app_sheet0.row_values(1, start_colx=0, end_colx=5))
     # print (app_sheet0.col_values(0, start_rowx=1, end_rowx=None)[15])
 
-    for row_i in range(0,app_row_n):
-        if case_code == app_sheet0.col_values(0, start_rowx=0, end_rowx=None)[row_i]:
-            return app_sheet0.row_values(row_i, start_colx=0, end_colx=6)
+	for row_i in range(0,app_row_n):
+		if case_code == app_sheet0.col_values(0, start_rowx=0, end_rowx=None)[row_i]:
+			return app_sheet0.row_values(row_i, start_colx=0, end_colx=7)
 
 if __name__ == '__main__':
 	# u.implicitly_wait(15)
@@ -222,8 +225,8 @@ if __name__ == '__main__':
 		# config = configparser.ConfigParser()
 		# config.read(cfgfile, encoding="utf-8-sig")
 		# print(listx
-		# Caselist = [1,2,4,5,6,7,8,9,10,11,12,13,3]
-		Caselist = [4,5,6]
+		Caselist = [1,2,4,5,6,7,8,9,10,11,12,13,3]
+		# Caselist = [4,5,6]
 		case_len = len(Caselist)
 		count_success = 0
 		fail_caselog = []
@@ -402,6 +405,7 @@ if __name__ == '__main__':
 				case_expectedResult=case_information[5],
 				runresult='<font color="red">Fail</font>',
 				reason=fail_caselog[n],
+				case_notes=case_information[5],
 
 			)
 			table_tr0 += table_td
