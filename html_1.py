@@ -40,7 +40,7 @@ class Template_mixin(object):
                 %(table_tr)s
                            
             </table>
-            %(caseList)s
+            %(caseList)s %(robotlog)s
         </body>
         </html>"""
 
@@ -92,7 +92,7 @@ if __name__ == '__main__':
     table_tr0 = table_td
     # table_tr0 += table_td
     case_url = '<a href=https://docs.qq.com/slide/DTkRnVUFmRnZpRGxE?u=4dfd95e91e7744258ad9751ffecf041b>查看测试用例</a>'
-
+    robot_log_url = '<a href=https://docs.qq.com/slide/DTkRnVUFmRnZpRGxE?u=4dfd95e91e7744258ad9751ffecf041b>机器人日志</a>'
 
     total_str = '共 %s，通过 %s，失败 %s，通过率 %s' % (numfail + numsucc, numsucc, numfail,str(float(numsucc/(numfail + numsucc))*100)+'%')
     start_time = '2022-04-30_15:15'
@@ -103,7 +103,8 @@ if __name__ == '__main__':
     table_tr = table_tr0,
     startTime = start_time,
     totalTime =  total_time,
-    caseList = case_url
+    caseList = case_url,
+    robotlog = robot_log_url
     )
 
     # 123456生成html报告

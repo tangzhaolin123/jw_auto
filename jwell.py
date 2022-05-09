@@ -13,8 +13,8 @@ import json
 import requests
 import xlrd
 
-# u = u1.connect('3f3582df')
-u = u1.connect('0.0.0.0')
+u = u1.connect('3f3582df')
+# u = u1.connect('0.0.0.0')
 URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
 
 def message(content):
@@ -159,6 +159,7 @@ class Template_mixin(object):
                 %(table_tr)s
             </table>
             %(caseList)s
+            %(robotlog)s
         </body>
         </html>"""
 
@@ -225,17 +226,19 @@ if __name__ == '__main__':
 		# config = configparser.ConfigParser()
 		# config.read(cfgfile, encoding="utf-8-sig")
 		# print(listx
-		Caselist = [1,2,4,5,6,7,8,9,10,11,12,13,3]
-		# Caselist = [4,5,6]
+		# Caselist = [1,2,4,5,6,7,8,9,10,11,12,13,3]
+		Caselist = [4]
 		case_len = len(Caselist)
 		count_success = 0
 		fail_caselog = []
+		robot_loglist = []
 		case_number = []
 		start_time = datetime.now()
 		for l0 in range(1, len(Caselist) + 1):
 			a0 = Caselist[l0 - 1]
 			#print(a, len(list1))
 			w_report = ''
+			robot_log_w = ''
 			try:
 				if a0 < 10:
 					u0 = "JiWei.jwt_0" + str(a0)
@@ -297,8 +300,9 @@ if __name__ == '__main__':
 				# 	pos5 = '执行编号Veri_' + str(j + 1) + '的用例' + app_element_url[j][0] + ',操作元素不存在'
 				# w = 'APP自动化测试' + '\n' + pos5
 				w = pos3 + '\n' + res
-				w_report += u0 + pos3 + '\n' + '<br />' + '<a href=' + res + '>查看报错图片</a>' + '<br />'  # '<a href='+res+'>图片</a>'
-
+				# w_report += u0 + pos3 + '\n' + '<br />' + '<a href=' + res + '>查看报错图片</a>' + '<br />'  # '<a href='+res+'>图片</a>'
+				w_report += '<a href=' + res + '>查看报错图片</a>' + '<br />'  # '<a href='+res+'>图片</a>'
+				robot_log_w += dt2 + u0 + pos3 + '\n'
 				try:
 					message(w)
 				except:
@@ -346,7 +350,9 @@ if __name__ == '__main__':
 						pos_1 = a1[pos1 - 23:pos2]
 						pos3 = re.sub('\n', "", pos_1)
 						w = u0+"重新执行"+str(retry_n)+"次仍报错"+pos3+'\n'+ res
-						w_report += u0+"重新执行"+str(retry_n)+"次仍报错"+pos3+'\n' +'<br />'+ '<a href='+res+'>查看报错图片</a>' +'<br />' #'<a href='+res+'>图片</a>'
+						# w_report += u0+"重新执行"+str(retry_n)+"次仍报错"+pos3+'\n' +'<br />'+ '<a href='+res+'>查看报错图片</a>' +'<br />' #'<a href='+res+'>图片</a>'
+						w_report += '<a href='+res+'>查看重新测试第'+str(retry_n)+'次报错图片</a>' +'<br />' #'<a href='+res+'>图片</a>'
+						robot_log_w += dt2+u0+"重新执行"+str(retry_n)+"次仍报错"+pos3+'\n'
 						# fail_caselog.append(w_report)
 						# case_number.append(u0)
 						try:
@@ -357,6 +363,7 @@ if __name__ == '__main__':
 					if retry_n == 2:
 						fail_caselog.append(w_report)
 						case_number.append(u0)
+						robot_loglist.append(robot_log_w)
 					if a0 == 1:
 						i=i - 1
 						break
@@ -371,11 +378,25 @@ if __name__ == '__main__':
 				if u.uiautomator.running() != True:
 					u.uiautomator.start()
 		# if l0 != 1:
+		# try:
 		count_case_fail = case_len - count_success
 		#报告详情
 		report_time = datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
 		report_file = report_time + ".html"
 		total_time = datetime.now() - start_time
+
+		#机器人日志
+		robot_log_file = dt2 + ".txt"
+
+		robot_log = open(robot_log_file, 'a')
+		for robot_i in range(0, len(robot_loglist)):
+			robot_log.write('\n' + robot_loglist[robot_i] + '\n')
+		# robot_log.flush()
+		robot_log.close()
+		robot_log_singleurl =up2qiniu(robot_log_file, "jwtime1", robot_log_file)
+		os.remove(robot_log_file)
+		robot_log_url = '<a href='+robot_log_singleurl+'>查看机器人日志</a>'
+		# print (robot_log_singleurl)
 
 		# f = open(report_file, 'a')
 		# f.write('自动化测试')
@@ -405,7 +426,7 @@ if __name__ == '__main__':
 				case_expectedResult=case_information[5],
 				runresult='<font color="red">Fail</font>',
 				reason=fail_caselog[n],
-				case_notes=case_information[5],
+				case_notes=case_information[6],
 
 			)
 			table_tr0 += table_td
@@ -419,7 +440,8 @@ if __name__ == '__main__':
 			table_tr=table_tr0,
 			startTime=start_time,
 			totalTime=total_time,
-			caseList=case_url
+			caseList=case_url,
+			robotlog= robot_log_url
 		)
 
 		# 生成html报告
@@ -435,3 +457,6 @@ if __name__ == '__main__':
 				# sleep(2)
 				# u(description="清除全部-按钮").click(timeout=5)
 				# sleep(2)
+		# except:
+		# 	w = '生成报告失败'
+		# 	message(w)
