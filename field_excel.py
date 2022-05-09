@@ -47,12 +47,20 @@ def excel_field(field_code):
 # print (r[result2[len(result2 )-2]])
 # field_code =  'Veri_06'
 # print (excel_field(field_code))
-def app_excel_field():
+def app_excel_field(case_code):
     app_xlsfile = os.getcwd() + '\\app_auto_case.xlsx'  # 打开指定路径中的xls文件
     app_book = xlrd.open_workbook(app_xlsfile)
-    app_sheet0 = app_book.sheet_by_index(0)
-    app_row_a = app_sheet0.nrows - 1
-    print (app_row_a)
+    app_sheet0 = app_book.sheet_by_index(1)
+    app_row_n = app_sheet0.nrows - 1
+    print (app_row_n,app_sheet0.row_values(1)[3])
+    print (app_sheet0.col_values(0, start_rowx=1, end_rowx=None))
+    # print (app_sheet0.row_values(1, start_colx=0, end_colx=5))
+    print (app_sheet0.col_values(0, start_rowx=1, end_rowx=None)[15])
+
+    for row_i in range(0,app_row_n):
+        if case_code == app_sheet0.col_values(0, start_rowx=0, end_rowx=None)[row_i]:
+            return app_sheet0.row_values(row_i, start_colx=0, end_colx=6)
+
     # app_field_list_operate = []
     # app_field_list_reset = []
     # app_dict_1 = {}
@@ -95,4 +103,4 @@ def app_excel_field():
 # print ('url',app_element[0])
 # print ('end',app_element[1])
 # print ('name',app_element[2])
-app_excel_field()
+app_excel_field('jwt_16')

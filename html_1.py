@@ -27,7 +27,12 @@ class Template_mixin(object):
                     <col align='right' />
                 </colgroup>
                 <tr id='header_row' class="text-center success" style="font-weight: bold;font-size: 14px;">
-                    <th>用例</th>
+                    <th>用例编号</th>
+                    <th>模块</th>
+                    <th>用例名称</th>
+                    <th>前置条件</th>
+                    <th>测试步骤</th>
+                    <th>预期结果</th>
                     <th>用例执行结果</th>
                     <th>失败原因</th>
                 </tr>
@@ -41,6 +46,11 @@ class Template_mixin(object):
     TABLE_TMPL = """
         <tr class='failClass warning'>
             <td>%(step)s</td>
+            <td>%(case_module)s</td>
+            <td>%(case_name)s</td>
+            <td>%(case_antecedents)s</td>
+            <td>%(case_testProcedure)s</td>
+            <td>%(case_expectedResult)s</td>
             <td>%(runresult)s</td>
             <td>%(reason)s</td>
         </tr>"""
@@ -61,18 +71,23 @@ if __name__ == '__main__':
     html = Template_mixin()
 
     table_td = html.TABLE_TMPL % dict(
-    step = ['1'],
-    runresult = 'Fail',
+    step = 'jwt_01',
+    case_module = '进入APP',
+    case_name = '同意用户服务协议',
+    case_antecedents = '清除APP数据',
+    case_testProcedure = '手机桌面进入有看头APP，弹出用户服务协议，点击同意',
+    case_expectedResult = '进入有看头APP的登录界面',
+    runresult = '<font color="red">Fail</font>',
     reason = '失败或成功原因 http://tangjw.xyz/2022-04-29_14.05.32.png',
     )
 
-    table_td1 = html.TABLE_TMPL % dict(
-        step=['2'],
-        runresult='Fail',
-        reason='失败或成功原因 http://tangjw.xyz/2022-04-29_14.05.32.png',
-    )
-
-    table_tr0 += table_td
+    # table_td1 = html.TABLE_TMPL % dict(
+    #     step=['2'],
+    #     runresult='Fail',
+    #     reason='失败或成功原因 http://tangjw.xyz/2022-04-29_14.05.32.png',
+    # )
+    table_tr0 = table_td
+    # table_tr0 += table_td
     case_url = '<a href=https://docs.qq.com/slide/DTkRnVUFmRnZpRGxE?u=4dfd95e91e7744258ad9751ffecf041b>查看测试用例</a>'
 
 

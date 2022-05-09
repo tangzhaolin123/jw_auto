@@ -23,14 +23,24 @@
                     <col align='right' />
                 </colgroup>
                 <tr id='header_row' class="text-center success" style="font-weight: bold;font-size: 14px;">
-                    <th>用例</th>
+                    <th>用例编号</th>
+                    <th>模块</th>
+                    <th>用例名称</th>
+                    <th>前置条件</th>
+                    <th>测试步骤</th>
+                    <th>预期结果</th>
                     <th>用例执行结果</th>
                     <th>失败原因</th>
                 </tr>
                 
         <tr class='failClass warning'>
-            <td>['1']</td>
-            <td>Fail</td>
+            <td>jwt_01</td>
+            <td>进入APP</td>
+            <td>同意用户服务协议</td>
+            <td>清除APP数据</td>
+            <td>手机桌面进入有看头APP，弹出用户服务协议，点击同意</td>
+            <td>进入有看头APP的登录界面</td>
+            <td><font color="red">Fail</font></td>
             <td>失败或成功原因 http://tangjw.xyz/2022-04-29_14.05.32.png</td>
         </tr>
                            

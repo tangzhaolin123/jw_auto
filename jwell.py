@@ -11,6 +11,7 @@ import re
 import os
 import json
 import requests
+import xlrd
 
 u = u1.connect('3f3582df')
 # u = u1.connect('0.0.0.0')
@@ -145,7 +146,12 @@ class Template_mixin(object):
                     <col align='right' />
                 </colgroup>
                 <tr id='header_row' class="text-center success" style="font-weight: bold;font-size: 14px;">
-                    <th>用例</th>
+                    <th>用例编号</th>
+                    <th>模块</th>
+                    <th>用例名称</th>
+                    <th>前置条件</th>
+                    <th>测试步骤</th>
+                    <th>预期结果</th>
                     <th>用例执行结果</th>
                     <th>失败原因</th>
                 </tr>
@@ -158,9 +164,28 @@ class Template_mixin(object):
     TABLE_TMPL = """
         <tr class='failClass warning'>
             <td>%(step)s</td>
+            <td>%(case_module)s</td>
+            <td>%(case_name)s</td>
+            <td>%(case_antecedents)s</td>
+            <td>%(case_testProcedure)s</td>
+            <td>%(case_expectedResult)s</td>
             <td>%(runresult)s</td>
             <td>%(reason)s</td>
         </tr>"""
+
+def app_excel_field(case_code):
+    app_xlsfile = os.getcwd() + '\\app_auto_case.xlsx'  # 打开指定路径中的xls文件
+    app_book = xlrd.open_workbook(app_xlsfile)
+    app_sheet0 = app_book.sheet_by_index(1)
+    app_row_n = app_sheet0.nrows - 1
+    # print (app_row_n,app_sheet0.row_values(1)[3])
+    # print (app_sheet0.col_values(0, start_rowx=1, end_rowx=None))
+    # # print (app_sheet0.row_values(1, start_colx=0, end_colx=5))
+    # print (app_sheet0.col_values(0, start_rowx=1, end_rowx=None)[15])
+
+    for row_i in range(0,app_row_n):
+        if case_code == app_sheet0.col_values(0, start_rowx=0, end_rowx=None)[row_i]:
+            return app_sheet0.row_values(row_i, start_colx=0, end_colx=6)
 
 if __name__ == '__main__':
 	# u.implicitly_wait(15)
@@ -197,8 +222,8 @@ if __name__ == '__main__':
 		# config = configparser.ConfigParser()
 		# config.read(cfgfile, encoding="utf-8-sig")
 		# print(listx
-		Caselist = [1,2,4,5,6,7,8,9,10,11,12,13,3]
-		# Caselist = [4,5,6]
+		# Caselist = [1,2,4,5,6,7,8,9,10,11,12,13,3]
+		Caselist = [4,5,6]
 		case_len = len(Caselist)
 		count_success = 0
 		fail_caselog = []
@@ -363,15 +388,21 @@ if __name__ == '__main__':
 		# 	f.write('\n' + fail_caselog[i] + '\n')
 		# # f.flush()
 		# f.close()
-
 		#html报告
 		table_tr0 = ''
 		html = Template_mixin()
 		for n in range(0,len(fail_caselog)):
+			case_information = app_excel_field(case_number[n].replace('JiWei.', ''))
 			table_td = html.TABLE_TMPL % dict(
-				step=case_number[n],
-				runresult='<font color="red">Fail</font>',#<font color="red"> </font>
+				step= case_information[0],
+				case_module=case_information[1],
+				case_name=case_information[2],
+				case_antecedents=case_information[3],
+				case_testProcedure=case_information[4],
+				case_expectedResult=case_information[5],
+				runresult='<font color="red">Fail</font>',
 				reason=fail_caselog[n],
+
 			)
 			table_tr0 += table_td
 		case_url = '<a href=https://docs.qq.com/sheet/DTmlsclZxVE1oRkl4?u=4dfd95e91e7744258ad9751ffecf041b&tab=BB08J3>查看测试用例</a>'
