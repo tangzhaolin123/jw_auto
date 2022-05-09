@@ -12,8 +12,8 @@ import os
 import json
 import requests
 
-# u = u1.connect('3f3582df')
-u = u1.connect('0.0.0.0')
+u = u1.connect('3f3582df')
+# u = u1.connect('0.0.0.0')
 URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
 
 def message(content):
@@ -68,8 +68,8 @@ def dingtalk_robot(total,pass_total,fial_total,report_url):
     response = requests.post(URL, data = json_data,headers = headers,timeout=3)
 
 
-access_key = 'gMQ_x2DD6xcBsHf7Bwn4iRGFLwLilsmiW5DG3RsI'
-secret_key = 'CAvmXjwUEZm8d8h_gStjOLKqy9ssx6mSHtlcFsdf'
+# access_key = 'gMQ_x2DD6xcBsHf7Bwn4iRGFLwLilsmiW5DG3RsI'
+# secret_key = 'CAvmXjwUEZm8d8h_gStjOLKqy9ssx6mSHtlcFsdf'
 
 
 from urllib.parse import urljoin
