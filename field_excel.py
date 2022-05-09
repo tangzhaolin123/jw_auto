@@ -48,38 +48,38 @@ def excel_field(field_code):
 # field_code =  'Veri_06'
 # print (excel_field(field_code))
 def app_excel_field():
-    app_xlsfile = os.getcwd() + '\\Field to check_ui.xlsx'  # 打开指定路径中的xls文件
+    app_xlsfile = os.getcwd() + '\\app_auto_case.xlsx'  # 打开指定路径中的xls文件
     app_book = xlrd.open_workbook(app_xlsfile)
     app_sheet0 = app_book.sheet_by_index(0)
     app_row_a = app_sheet0.nrows - 1
-    # print (app_row_a)
-    app_field_list_operate = []
-    app_field_list_reset = []
-    app_dict_1 = {}
-    for i in range(1, app_row_a + 1):
-        if app_sheet0.row_values(i)[3] == '':
-            app_field_list_1 = (app_sheet0.row_values(i)[1] +','+ app_sheet0.row_values(i)[2]).split(',')
-        elif app_sheet0.row_values(i)[4] == '':
-             app_field_list_1 = (app_sheet0.row_values(i)[1] +','+ app_sheet0.row_values(i)[2]  +','+  app_sheet0.row_values(i)[3]).split(',')
-        elif app_sheet0.row_values(i)[5] == '':
-             app_field_list_1 = (app_sheet0.row_values(i)[1] +','+ app_sheet0.row_values(i)[2]  +','+  app_sheet0.row_values(i)[3]  +','+  app_sheet0.row_values(i)[4]).split(',')
-        elif app_sheet0.row_values(i)[6] == '':
-            app_field_list_1 = (app_sheet0.row_values(i)[1] +','+ app_sheet0.row_values(i)[2]  +','+  app_sheet0.row_values(i)[3]  +','+  app_sheet0.row_values(i)[4]  +','+  app_sheet0.row_values(i)[5]).split(',')
-        else:
-            app_field_list_1 = (app_sheet0.row_values(i)[1] +','+ app_sheet0.row_values(i)[2]  +','+  app_sheet0.row_values(i)[3]  +','+  app_sheet0.row_values(i)[4]  +','+ app_sheet0.row_values(i)[5]  +','+  app_sheet0.row_values(i)[6]).split(',')
-
-        if app_sheet0.row_values(i)[8] == '':
-            app_field_list_2 = app_sheet0.row_values(i)[7].split()
-        elif app_sheet0.row_values(i)[9] == '':
-            app_field_list_2 = (app_sheet0.row_values(i)[7] + ',' + app_sheet0.row_values(i)[8]).split(',')
-        else:
-            app_field_list_2 = (app_sheet0.row_values(i)[7] + ',' + app_sheet0.row_values(i)[8] + ',' + app_sheet0.row_values(i)[9]).split(',')
-
-        app_field_list_operate.append(app_field_list_1)
-        app_field_list_reset.append(app_field_list_2)
-        app_dict_1[app_sheet0.row_values(i)[0]] = app_sheet0.row_values(i)[10]
+    print (app_row_a)
+    # app_field_list_operate = []
+    # app_field_list_reset = []
+    # app_dict_1 = {}
+    # for i in range(1, app_row_a + 1):
+    #     if app_sheet0.row_values(i)[3] == '':
+    #         app_field_list_1 = (app_sheet0.row_values(i)[1] +','+ app_sheet0.row_values(i)[2]).split(',')
+    #     elif app_sheet0.row_values(i)[4] == '':
+    #          app_field_list_1 = (app_sheet0.row_values(i)[1] +','+ app_sheet0.row_values(i)[2]  +','+  app_sheet0.row_values(i)[3]).split(',')
+    #     elif app_sheet0.row_values(i)[5] == '':
+    #          app_field_list_1 = (app_sheet0.row_values(i)[1] +','+ app_sheet0.row_values(i)[2]  +','+  app_sheet0.row_values(i)[3]  +','+  app_sheet0.row_values(i)[4]).split(',')
+    #     elif app_sheet0.row_values(i)[6] == '':
+    #         app_field_list_1 = (app_sheet0.row_values(i)[1] +','+ app_sheet0.row_values(i)[2]  +','+  app_sheet0.row_values(i)[3]  +','+  app_sheet0.row_values(i)[4]  +','+  app_sheet0.row_values(i)[5]).split(',')
+    #     else:
+    #         app_field_list_1 = (app_sheet0.row_values(i)[1] +','+ app_sheet0.row_values(i)[2]  +','+  app_sheet0.row_values(i)[3]  +','+  app_sheet0.row_values(i)[4]  +','+ app_sheet0.row_values(i)[5]  +','+  app_sheet0.row_values(i)[6]).split(',')
+    #
+    #     if app_sheet0.row_values(i)[8] == '':
+    #         app_field_list_2 = app_sheet0.row_values(i)[7].split()
+    #     elif app_sheet0.row_values(i)[9] == '':
+    #         app_field_list_2 = (app_sheet0.row_values(i)[7] + ',' + app_sheet0.row_values(i)[8]).split(',')
+    #     else:
+    #         app_field_list_2 = (app_sheet0.row_values(i)[7] + ',' + app_sheet0.row_values(i)[8] + ',' + app_sheet0.row_values(i)[9]).split(',')
+    #
+    #     app_field_list_operate.append(app_field_list_1)
+    #     app_field_list_reset.append(app_field_list_2)
+    #     app_dict_1[app_sheet0.row_values(i)[0]] = app_sheet0.row_values(i)[10]
             #app_field_list_1 = (app_sheet0.row_values(i)[2]+ app_sheet0.row_values(i)[3]+ app_sheet0.row_values(i)[4] + app_sheet0.row_values(i)[5] + app_sheet0.row_values(i)[6]+ app_sheet0.row_values(i)[7])
-    return app_field_list_operate,app_field_list_reset,app_dict_1
+    # return app_field_list_operate,app_field_list_reset,app_dict_1
     #print (app_field_list[1])
         # if app_field_code == app_sheet0.row_values(i)[0]:
         #     app_field_list.append(app_field_list_1)
@@ -95,3 +95,4 @@ def app_excel_field():
 # print ('url',app_element[0])
 # print ('end',app_element[1])
 # print ('name',app_element[2])
+app_excel_field()
