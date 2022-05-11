@@ -37,11 +37,6 @@ def message(content):
 		pass
 
 def dingtalk_robot(total,pass_total,fial_total,report_url):
-
-
-    # url = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
-
-
     headers = {'Content-Type':'application/json'}
 
     data_dict = {
@@ -49,12 +44,6 @@ def dingtalk_robot(total,pass_total,fial_total,report_url):
 
         "markdown":{
             "title":"测试报告",
-
-            # "text":"#### 测试报告 \n\n"
-            #        "> **Application_ID:** app-20201208100505-58622\n\n"
-            #        "> **Name:** compute_04\n\n"
-            #        "> **Duration:** 4.4 h"
-            #        "##### <font color=#FF0000>橙色预警: 夜晚将有雷阵雨 </font>"
            "text":"#### 测试报告 \n\n"
 				  "![report](http://tangjw.xyz/report.png)"
                   "> **用例总数:** **"+str(total)+"**\n\n"
@@ -109,12 +98,6 @@ def up2qiniu(local_img,space_name,img_name):
     # localfile = r'D:\jw8'
 
     ret, info = put_file(token, key, local_img)
-    # print(info)
-    # assert ret['key'] == key
-    # assert ret['hash'] == etag(local_img)
-
-    # img_url = 空间名称 拼接 远程图片名称
-    # img_url = urljoin("http://q57wyk04l.bkt.clouddn.com", img_name)
     img_url = urljoin(space2url[space_name], img_name)
     return img_url
 # res = up2qiniu(r'c.png', "jwtime1","c.png")
@@ -182,11 +165,6 @@ def app_excel_field(case_code):
 	app_book = xlrd.open_workbook(app_xlsfile)
 	app_sheet0 = app_book.sheet_by_index(1)
 	app_row_n = app_sheet0.nrows - 1
-    # print (app_row_n,app_sheet0.row_values(1)[3])
-    # print (app_sheet0.col_values(0, start_rowx=1, end_rowx=None))
-    # # print (app_sheet0.row_values(1, start_colx=0, end_colx=5))
-    # print (app_sheet0.col_values(0, start_rowx=1, end_rowx=None)[15])
-
 	for row_i in range(0,app_row_n):
 		if case_code == app_sheet0.col_values(0, start_rowx=0, end_rowx=None)[row_i]:
 			return app_sheet0.row_values(row_i, start_colx=0, end_colx=7)
@@ -226,8 +204,8 @@ if __name__ == '__main__':
 		# config = configparser.ConfigParser()
 		# config.read(cfgfile, encoding="utf-8-sig")
 		# print(listx
-		# Caselist = [1,2,4,5,6,7,8,9,10,11,12,13,3]
-		Caselist = [4]
+		Caselist = [1,2,4,5,6,7,8,9,10,11,12,13,3]
+		# Caselist = [4,5]
 		case_len = len(Caselist)
 		count_success = 0
 		fail_caselog = []

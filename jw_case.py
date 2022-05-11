@@ -31,7 +31,7 @@ import threading
 #     assert u(text='设备').exists, '没有进入首页设备列表'
 
 class JiWei:
-    def app_start(u):
+    def app_start_1(u):
         u.press("home")
         sleep(1)
         u.press("home")
