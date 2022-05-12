@@ -292,8 +292,8 @@ class Tiktok:
         # print (type(kw),kw)
         # 查
         # xz = [0,1]
-        list2 = random.sample(list1, 1)
-        list3 = [f for f in list1 if f not in list2]
+        # list2 = random.sample(list1, 1)
+        # list3 = [f for f in list1 if f not in list2]
         # if random.choice(xz) == 0:
         u(resourceId="com.zhiliaoapp.musically:id/b8b").click()
         sleep(random.choice(rtimes))
@@ -381,3 +381,36 @@ class Tiktok:
             dy2 = random.randint(1500, 1600)
             u.drag(dx1, dy2, dx2, dy1, 0.2)
             sleep(random.choice(rtimes2))
+
+    @classmethod
+    def tok_04(cls, u, d_time):  # no friend
+        # sleep(1)
+        u.press("home")
+        # sleep(1)
+        u.press("home")
+        # sleep(2)
+        # screen = u.window_size()
+        # print (screen,screen[0])
+        # a = screen.values()
+        # t1_kuai = 0
+        # start1 = datetime.now()
+        u.app_start('com.zhiliaoapp.musically')
+        sleep(8)
+        # try:
+        #     assert u(text="我知道了").exists
+        #     u.press("back")
+        #     sleep(2)
+        # except:
+        #     pass
+        # u.tap([(540, 960)], )
+        # sleep(1)
+        #com.zhiliaoapp.musically:id/cxp #我的
+        #com.zhiliaoapp.musically:id/bg4 #关注
+        #//*[@resource-id="com.zhiliaoapp.musically:id/ea0"]/android.widget.LinearLayout[3]/android.widget.RelativeLayout[1]/android.widget.RelativeLayout[1]
+        #//*[@resource-id="com.zhiliaoapp.musically:id/ea0"]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[1]/android.widget.RelativeLayout[1]
+
+        times = [15, 6, 10, 20]
+        rtimes = [1.8, 1.9, 2, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6]
+        rtimes2 = [1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8]
+        u(resourceId="com.zhiliaoapp.musically:id/agi").click()
+        sleep(random.choice(rtimes))

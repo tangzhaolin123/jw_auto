@@ -10,8 +10,9 @@ import os
 import random
 import configparser
 import traceback
-u = u1.connect('0.0.0.0')
+# u = u1.connect('0.0.0.0')
 # u = u1.connect('5806c062')
+u = u1.connect('eff85ca1')
 
 
 # def wechat_notification(p1, w):
@@ -23,13 +24,15 @@ if __name__ == '__main__':
 	# screen = u.window_size()
 	# u.swipe(screen[0] / 2, (screen[1] - 350), screen[0] / 2, 350,800)
 	# sleep(3)
-	u.implicitly_wait(20)
-	print (datetime.now())
-	u.press("home")
-	sleep(2)
-	u.press("menu")
-	sleep(2)
-	u(resourceId="com.android.systemui:id/clearAnimView").click()
+
+	# u.implicitly_wait(20)
+	# print (datetime.now())
+	# u.press("home")
+	# sleep(2)
+	# u.press("menu")
+	# sleep(2)
+	# u(resourceId="com.android.systemui:id/clearAnimView").click()
+
 	# u(resourceId="com.android.systemui:id/recent_apps").click()
 	# u(resourceId="com.oppo.launcher:id/btn_clear").click()
 	u.set_fastinput_ime(True)
@@ -41,7 +44,7 @@ if __name__ == '__main__':
 	while i<100:
 		i=i+1
 		print(('Testing time: %d') % (i))
-		list1 = [2,3]
+		list1 = [3]
 		# cfgpath = "dbconf.ini"
 		# config = configparser.ConfigParser()
 		# config.read(cfgpath, encoding="gb2312")

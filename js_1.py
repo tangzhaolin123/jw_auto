@@ -22,9 +22,25 @@
 # for i in ret['items']:
 #     print(i['key'])
 #     ret, info = bucket.delete(bucket_name, i['key'])
-a = 1
+# a = 1
 
 
 # def say():
 #     print('调用了全局方法')
 
+# def use_logging(func):
+#   print("%s is running" % func.__name__())
+#   return func
+# @use_logging
+# def bar():
+#   print('i am bar')
+# bar()
+class _TestResult(TestResult):
+  # note: _TestResult is a pure representation of results.
+  # It lacks the output and reporting ability compares to unittest._TextTestResult.
+
+  def __init__(self, verbosity=1):
+    TestResult.__init__(self)
+# def use_logging1():
+#   print (__name__)
+# use_logging1()

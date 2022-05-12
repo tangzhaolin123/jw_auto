@@ -171,30 +171,12 @@ def app_excel_field(case_code):
 
 if __name__ == '__main__':
 	# u.implicitly_wait(15)
-	#d.swipe_points([(x0, y0), (x1, y1), (x2, y2)], 0.2))
-
-	# u.swipe_points([(117, 937), (540, 533), (865, 533)], 0.2)
-	# sleep(3)
-	# u.swipe_points([(117, 937), (540, 533), (723, 533)], 0.2)
-	# sleep(3)
-	# u.swipe_points([(117, 937), (540, 533), (790, 533)], 0.2)
-	# sleep(20)
 	u.press("home")
 	sleep(3)
 	u.app_start('com.termux')
 	sleep(1)
 	u.press("home")
 	sleep(3)
-	# u.press("recent")
-	# sleep(2)
-	# u(description="清除全部-按钮").click()
-	# sleep(2)
-	# # u(resourceId="com.android.systemui:id/recent_apps").click()
-	# # u(resourceId="com.oppo.launcher:id/btn_clear").click()
-	# sleep(3)
-	# message('HI好')
-	# if u.uiautomator.running()!= True:
-	# 	u.uiautomator.start()
 	i = 0
 	while i<1000:
 		i=i+1
