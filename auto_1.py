@@ -1,25 +1,26 @@
-# import json
-# import requests
-# from time import sleep
+import json
+import requests
+from time import sleep
 #
 # URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
-#
+URL = "https://oapi.dingtalk.com/robot/send?access_token=0a200657eeefb39d0180cf7a292f26ed4e7038de9387b0573b5bbd35a5e58050"  # Webhook地址
+
 # #content
-# def message(content):
-#     data = {
-#     "msgtype":"text",
-#     "text":{
-#         "content":"测试监控："+content
-#     }
-#     }
-#     headers1 = {
-#         "Content-Type": "application/json;charset=UTF-8"
-#     }
-#     data = json.dumps(data, ensure_ascii=False)
-#     data = data.encode(encoding="utf-8")
-#     r = requests.post(url=URL, data=data,headers=headers1,timeout=3)
-#     r = json.loads(r.text)
-#     return r
+def message(content):
+    data = {
+    "msgtype":"text",
+    "text":{
+        "content":"测试："+content
+    }
+    }
+    headers1 = {
+        "Content-Type": "application/json;charset=UTF-8"
+    }
+    data = json.dumps(data, ensure_ascii=False)
+    data = data.encode(encoding="utf-8")
+    r = requests.post(url=URL, data=data,headers=headers1,timeout=3)
+    r = json.loads(r.text)
+    return r
 
 #markdown
 import requests
@@ -30,7 +31,8 @@ import json
 def dingtalk_robot(total,pass_total,fial_total,report_url):
 
 
-    url = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
+    # url = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
+    url = "https://oapi.dingtalk.com/robot/send?access_token=0a200657eeefb39d0180cf7a292f26ed4e7038de9387b0573b5bbd35a5e58050"  # Webhook地址
 
 
     headers = {'Content-Type':'application/json'}
@@ -64,8 +66,9 @@ def dingtalk_robot(total,pass_total,fial_total,report_url):
 
 if __name__ == '__main__':
 
-    dingtalk_robot(40,21,19,'(http://tangjw.xyz/test_report.txt)')
-
+    # dingtalk_robot(13,12,1,'(http://tangjw.xyz/2022-05-11_06.10.34.html)')
+    content = '出现了BUG'
+    message(content)
 # def app_start(u):
 #     u.press("home")
 #     sleep(1)

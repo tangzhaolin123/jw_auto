@@ -14,8 +14,12 @@ import requests
 import xlrd
 
 u = u1.connect('3f3582df')
+# u = u1.connect('VS7P9L4PB6LFMRVW')
 # u = u1.connect('0.0.0.0')
+#debug
 URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
+#测试
+# URL = "https://oapi.dingtalk.com/robot/send?access_token=0a200657eeefb39d0180cf7a292f26ed4e7038de9387b0573b5bbd35a5e58050"  # Webhook地址
 
 def message(content):
 	try:
@@ -171,12 +175,27 @@ def app_excel_field(case_code):
 
 if __name__ == '__main__':
 	# u.implicitly_wait(15)
+	video_camera_name = '18726303'
+	# video_camera_name = input("input:")
+	# u.app_install('http://tangjw.xyz/1234.apk')
 	u.press("home")
 	sleep(3)
 	u.app_start('com.termux')
 	sleep(1)
 	u.press("home")
 	sleep(3)
+
+	#监控弹框
+	u.watcher.when("同意").click()
+	u.watcher.when("允许").click()
+	u.watcher.when("仅在前台使用应用时允许").click()
+	u.watcher.when("双指可放大画面").click()
+	u.watcher.when("可以尝试上下左右拖动画面").click()
+	u.watcher.when("深入了解").click()
+	u.watcher.when("我知道了").click()
+	u.watcher.when("消息通知说明").press("back")
+	# u.watcher.start()
+
 	i = 0
 	while i<1000:
 		i=i+1
@@ -186,8 +205,8 @@ if __name__ == '__main__':
 		# config = configparser.ConfigParser()
 		# config.read(cfgfile, encoding="utf-8-sig")
 		# print(listx
-		Caselist = [1,2,4,5,6,7,8,9,10,11,12,13,3]
-		# Caselist = [4,5]
+		# Caselist = [1,2,4,5,6,7,8,9,10,11,12,13,3]
+		Caselist = [1,2,3,4,5,6]
 		case_len = len(Caselist)
 		count_success = 0
 		fail_caselog = []
@@ -203,11 +222,11 @@ if __name__ == '__main__':
 				if a0 < 10:
 					u0 = "JiWei.jwt_0" + str(a0)
 					print(u0)
-					eval(u0)(u)
+					eval(u0)(u,video_camera_name)
 				else:
 					u0 = "JiWei.jwt_" + str(a0)
 					print(u0)
-					eval(u0)(u)
+					eval(u0)(u,video_camera_name)
 				# u.app_start('com.termux')
 				# u.press("home")
 				count_success = count_success + 1
@@ -283,7 +302,7 @@ if __name__ == '__main__':
 				for retry_n in range(1,3):
 				#重试一次
 					try:
-						eval(u0)(u)
+						eval(u0)(u,video_camera_name)
 						message(u0+"重新执行"+str(retry_n)+"次OK")
 						count_success = count_success + 1
 						break
@@ -324,8 +343,8 @@ if __name__ == '__main__':
 						fail_caselog.append(w_report)
 						case_number.append(u0)
 						robot_loglist.append(robot_log_w)
-					if a0 == 1:
-						i=i - 1
+					if a0 > 7:
+						u.watcher.when("com.yoosee:id/iv_wechat").click()
 						break
 					u.press("back")
 					sleep(1)
@@ -346,7 +365,8 @@ if __name__ == '__main__':
 		total_time = datetime.now() - start_time
 
 		#机器人日志
-		robot_log_file = dt2 + ".txt"
+		dt3 = datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
+		robot_log_file = dt3 + ".txt"
 
 		robot_log = open(robot_log_file, 'a')
 		for robot_i in range(0, len(robot_loglist)):
@@ -390,7 +410,7 @@ if __name__ == '__main__':
 
 			)
 			table_tr0 += table_td
-		case_url = '<a href=https://docs.qq.com/sheet/DTmlsclZxVE1oRkl4?u=4dfd95e91e7744258ad9751ffecf041b&tab=BB08J3>查看测试用例</a>'
+		case_url = '<a href=https://docs.qq.com/sheet/DTlZ5aEJEcUJwSVl6>查看测试用例</a>'
 		total_str = '共 %s，通过 %s，失败 %s，通过率 %s' % (
 		count_case_fail + count_success, count_success, count_case_fail, str(round(count_success / (count_case_fail + count_success),2) * 100) + '%')
 		# start_time = '2022-04-30_15:15'

@@ -35,12 +35,42 @@
 # def bar():
 #   print('i am bar')
 # bar()
-class _TestResult(TestResult):
-  # note: _TestResult is a pure representation of results.
-  # It lacks the output and reporting ability compares to unittest._TextTestResult.
-
-  def __init__(self, verbosity=1):
-    TestResult.__init__(self)
+# class TestResult:
+#   # note: _TestResult is a pure representation of results.
+#   # It lacks the output and reporting ability compares to unittest._TextTestResult.
+#   def use_logging(a):
+#     print("is running",a)
+#
+#   @use_logging
+#   def bar():
+#     print('i am bar')
+# a = 1
+# TestResult.bar(a)
 # def use_logging1():
 #   print (__name__)
 # use_logging1()
+
+from functools import wraps
+
+
+def decorator_name(f):
+  @wraps(f)
+  def decorated(*args, **kwargs):
+    if not can_run:
+      return "Function will not run"
+    return f(*args, **kwargs)
+
+  return decorated
+
+
+@decorator_name
+def func():
+  return ("Function is running")
+
+
+can_run = True
+print(func())
+# Output: Function is running
+
+can_run = False
+print(func())
