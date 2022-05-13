@@ -13,9 +13,9 @@ import json
 import requests
 import xlrd
 
-u = u1.connect('3f3582df')
+# u = u1.connect('3f3582df')
 # u = u1.connect('VS7P9L4PB6LFMRVW')
-# u = u1.connect('0.0.0.0')
+u = u1.connect('0.0.0.0')
 #debug
 URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
 #测试
@@ -178,6 +178,10 @@ if __name__ == '__main__':
 	video_camera_name = '18726303'
 	# video_camera_name = input("input:")
 	# u.app_install('http://tangjw.xyz/1234.apk')
+	u.press("back")
+	sleep(1)
+	u.press("back")
+	sleep(1)
 	u.press("home")
 	sleep(3)
 	u.app_start('com.termux')
@@ -196,6 +200,7 @@ if __name__ == '__main__':
 	u.watcher.when("消息通知说明").press("back")
 	# u.watcher.start()
 
+
 	i = 0
 	while i<1000:
 		i=i+1
@@ -206,13 +211,15 @@ if __name__ == '__main__':
 		# config.read(cfgfile, encoding="utf-8-sig")
 		# print(listx
 		# Caselist = [1,2,4,5,6,7,8,9,10,11,12,13,3]
-		Caselist = [1,2,3,4,5,6]
+		Caselist = [1,2,3,4,5,6,7,8,9,10]
+		# Caselist = [9,10]
 		case_len = len(Caselist)
 		count_success = 0
 		fail_caselog = []
 		robot_loglist = []
 		case_number = []
 		start_time = datetime.now()
+		u.watcher.stop()
 		for l0 in range(1, len(Caselist) + 1):
 			a0 = Caselist[l0 - 1]
 			#print(a, len(list1))
@@ -283,21 +290,23 @@ if __name__ == '__main__':
 				w_report += '<a href=' + res + '>查看报错图片</a>' + '<br />'  # '<a href='+res+'>图片</a>'
 				robot_log_w += dt2 + u0 + pos3 + '\n'
 				try:
-					message(w)
+					interval_time2 = datetime.now()
+					if interval_time2 - start_time > timedelta(seconds=6*int(l0)):
+						message(w)
 				except:
 					pass
-				if u(text="推送消息提醒").exists:
-					u(resourceId='com.yoosee:id/tx_deep_understand').click(timeout=5)
-					u(resourceId='com.yoosee:id/iv_back').click(timeout=5)
-					sleep(3)
-				u.press("back")
-				sleep(1)
-				u.press("back")
-				sleep(1)
-				u.press("home")
-				sleep(2)
-				u.app_stop('com.yoosee')
-				sleep(2)
+				# if u(text="推送消息提醒").exists:
+				# 	u(resourceId='com.yoosee:id/tx_deep_understand').click(timeout=5)
+				# 	u(resourceId='com.yoosee:id/iv_back').click(timeout=5)
+				# 	sleep(3)
+				# u.press("back")
+				# sleep(1)
+				# u.press("back")
+				# sleep(1)
+				# u.press("home")
+				# sleep(2)
+				# u.app_stop('com.yoosee')
+				# sleep(2)
 
 				for retry_n in range(1,3):
 				#重试一次
@@ -343,17 +352,16 @@ if __name__ == '__main__':
 						fail_caselog.append(w_report)
 						case_number.append(u0)
 						robot_loglist.append(robot_log_w)
-					if a0 > 7:
-						u.watcher.when("com.yoosee:id/iv_wechat").click()
-						break
-					u.press("back")
-					sleep(1)
-					u.press("back")
-					sleep(1)
-					u.press("home")
-					sleep(2)
-					u.app_stop('com.yoosee')
-					sleep(2)
+					# if a0 > 7:
+					# 	break
+					# u.press("back")
+					# sleep(1)
+					# u.press("back")
+					# sleep(1)
+					# u.press("home")
+					# sleep(2)
+					# u.app_stop('com.yoosee')
+					# sleep(2)
 				if u.uiautomator.running() != True:
 					u.uiautomator.start()
 		# if l0 != 1:

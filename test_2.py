@@ -53,11 +53,11 @@ u = u2.connect('3f3582df')
 #     ctx.when("@tb:id/jview_view").when('//*[@content-desc="图片"]').click()
 
     # 其他脚本逻辑
-class SameOperation():
+class SameOperation:
     # def __init__(self, u: "uiautomator2.Device"):
     #     self._u = u
 
-    def write_off(self,u):
+    def write_off(u):
         if not u(text='登录').exists:
             #退出登录
             u(resourceId='com.yoosee:id/icon_setting_img').click(timeout=5)
@@ -66,4 +66,4 @@ class SameOperation():
             u(resourceId='com.yoosee:id/iv_headimg').click(timeout=5)
             u(resourceId='com.yoosee:id/btn_logout').click(timeout=5)
             sleep(5)
-SameOperation().write_off(u)
+SameOperation.write_off(u)
