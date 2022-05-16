@@ -5,6 +5,7 @@ import uiautomator2 as u1
 import random
 import configparser
 from jw_case import JiWei
+from jw_case import SameOperation
 from datetime import datetime
 from datetime import timedelta
 import re
@@ -13,9 +14,9 @@ import json
 import requests
 import xlrd
 
-# u = u1.connect('3f3582df')
+u = u1.connect('3f3582df')
 # u = u1.connect('VS7P9L4PB6LFMRVW')
-u = u1.connect('0.0.0.0')
+# u = u1.connect('0.0.0.0')
 #debug
 URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
 #测试
@@ -211,20 +212,25 @@ if __name__ == '__main__':
 		# config.read(cfgfile, encoding="utf-8-sig")
 		# print(listx
 		# Caselist = [1,2,4,5,6,7,8,9,10,11,12,13,3]
-		Caselist = [1,2,3,4,5,6,7,8,9,10]
-		# Caselist = [9,10]
+		Caselist = [11,12,13,14,15,16]
+		# Caselist = [14]
 		case_len = len(Caselist)
 		count_success = 0
 		fail_caselog = []
 		robot_loglist = []
 		case_number = []
 		start_time = datetime.now()
-		u.watcher.stop()
+		# u.watcher.stop()
 		for l0 in range(1, len(Caselist) + 1):
 			a0 = Caselist[l0 - 1]
 			#print(a, len(list1))
 			w_report = ''
 			robot_log_w = ''
+			if a0 == 1 or a0 == 2:
+				# 停止所有监视
+				u.watcher.stop()
+			else:
+				u.watcher.start()
 			try:
 				if a0 < 10:
 					u0 = "JiWei.jwt_0" + str(a0)
@@ -295,10 +301,7 @@ if __name__ == '__main__':
 						message(w)
 				except:
 					pass
-				# if u(text="推送消息提醒").exists:
-				# 	u(resourceId='com.yoosee:id/tx_deep_understand').click(timeout=5)
-				# 	u(resourceId='com.yoosee:id/iv_back').click(timeout=5)
-				# 	sleep(3)
+				SameOperation().quit_app(u)
 				# u.press("back")
 				# sleep(1)
 				# u.press("back")
@@ -354,18 +357,10 @@ if __name__ == '__main__':
 						robot_loglist.append(robot_log_w)
 					# if a0 > 7:
 					# 	break
-					# u.press("back")
-					# sleep(1)
-					# u.press("back")
-					# sleep(1)
-					# u.press("home")
-					# sleep(2)
-					# u.app_stop('com.yoosee')
-					# sleep(2)
+					SameOperation().quit_app(u)
 				if u.uiautomator.running() != True:
 					u.uiautomator.start()
-		# if l0 != 1:
-		# try:
+
 		count_case_fail = case_len - count_success
 		#报告详情
 		report_time = datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
@@ -440,7 +435,10 @@ if __name__ == '__main__':
 		report_url = '('+up2qiniu(report_file, "jwtime1", report_file)+')'
 		os.remove(report_file)
 
-		dingtalk_robot(str(case_len),str(count_success),str(count_case_fail),report_url)
+		# if i == 1 or i == 2 or i == 3 or i%20 == 0:#前三次报告发出来，后面每20次发一次报告
+		if i == 20:
+			dingtalk_robot(str(case_len),str(count_success),str(count_case_fail),report_url)
+
 		# u.press("recent")
 				# sleep(2)
 				# u(description="清除全部-按钮").click(timeout=5)
