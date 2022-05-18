@@ -14,13 +14,13 @@ import json
 import requests
 import xlrd
 
-# u = u1.connect('3f3582df')
+u = u1.connect('3f3582df')
 # u = u1.connect('VS7P9L4PB6LFMRVW')
-u = u1.connect('0.0.0.0')
+# u = u1.connect('0.0.0.0')
 #debug
-# URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
+URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
 #测试
-URL = "https://oapi.dingtalk.com/robot/send?access_token=0a200657eeefb39d0180cf7a292f26ed4e7038de9387b0573b5bbd35a5e58050"  # Webhook地址
+# URL = "https://oapi.dingtalk.com/robot/send?access_token=0a200657eeefb39d0180cf7a292f26ed4e7038de9387b0573b5bbd35a5e58050"  # Webhook地址
 
 def message(content):
 	try:
@@ -62,7 +62,61 @@ def dingtalk_robot(total,pass_total,fial_total,report_url):
 
     response = requests.post(URL, data = json_data,headers = headers,timeout=3)
 
+class DingMessage:
+	def __init__(self):
+		# self.URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
+		self.URL = URL
+		self.headers = {'Content-Type':'application/json'}
+	def dingtalk_testexception(self,case_code,case_name,premise_conditions,case_steps,expected_result,result_url):
+		if "重新" in case_code:
+			data_dict = {
+				"msgtype": "markdown",
 
+				"markdown": {
+					"title": "异常重新测试提示",
+					"text": "#### **<font color=#7CFCOO>" + case_code + "测试通过**</font>\n\n"
+					"> **用例名称:** <font color=#000000>" + case_name + "</font>\n\n"
+					"> **前置条件:** <font color=#000000>" + premise_conditions + "</font>\n\n"
+					"> **操作步骤:** <font color=#000000>" + case_steps + "</font>\n\n"
+					"> **预期结果:** <font color=#000000>" + expected_result + "</font>\n\n"
+				}
+			}
+		else:
+			data_dict = {
+				"msgtype":"markdown",
+
+				"markdown":{
+					"title":"测试异常提示",
+				   "text":"#### **<font color=#FF0000>"+case_code+"测试异常**</font>\n\n"
+						  "> **用例名称:** <font color=#000000>"+case_name+"</font>\n\n"                        
+						  "> **前置条件:** <font color=#000000>"+premise_conditions+"</font>\n\n"                        
+						  "> **操作步骤:** <font color=#000000>"+case_steps+"</font>\n\n"
+						  "> **预期结果:** <font color=#000000>"+expected_result+"</font>\n\n"
+						  "[查看报错时截图](" + result_url+')'
+				}
+			}
+
+		json_data =json.dumps(data_dict)
+		response = requests.post(self.URL, data = json_data,headers = self.headers,timeout=3)
+
+	def dingtalk_robot(self,total,pass_total,fial_total,report_url):
+		data_dict = {
+			"msgtype":"markdown",
+
+			"markdown":{
+				"title":"测试报告",
+			   "text":"#### 测试报告 \n\n"
+					  "![report](http://tangjw.xyz/report.png)"
+					  "> **用例总数:** **"+str(total)+"**\n\n"
+					  "> **PASS:** **<font color=#7CFCOO>"+str(pass_total)+"</font>**\n\n"
+					  "> **FAIL:** **<font color=#FF0000>"+str(fial_total)+"</font>**\n\n"
+					  "[查看详情]"+report_url
+			}
+		}
+
+		json_data =json.dumps(data_dict)
+
+		response = requests.post(self.URL, data = json_data,headers = self.headers,timeout=3)
 # access_key = 'gMQ_x2DD6xcBsHf7Bwn4iRGFLwLilsmiW5DG3RsI'
 # secret_key = 'CAvmXjwUEZm8d8h_gStjOLKqy9ssx6mSHtlcFsdf'
 
@@ -174,6 +228,39 @@ def app_excel_field(case_code):
 		if case_code == app_sheet0.col_values(0, start_rowx=0, end_rowx=None)[row_i]:
 			return app_sheet0.row_values(row_i, start_colx=0, end_colx=7)
 
+class CaseExcel:
+    def __init__(self):
+        self.app_xlsfile = 'app_auto_case.xlsx'
+        self.app_book = xlrd.open_workbook(self.app_xlsfile)#打开文件
+        self.app_sheet0 = self.app_book.sheet_by_index(1)#通过索引顺序获取
+        self.app_row_n = self.app_sheet0.nrows - 1
+
+    def app_excel_field(self,case_code):
+        for row_i in range(0,self.app_row_n):
+            if case_code == self.app_sheet0.col_values(0, start_rowx=0, end_rowx=None)[row_i]:#返回由该列中所有单元格的数据组成的列表
+                return self.app_sheet0.row_values(row_i, start_colx=0, end_colx=6)#返回由该行中所有单元格的数据组成的列表
+
+    def auto_caselist(self):
+        CodeList = self.app_sheet0.col_values(0, start_rowx=1, end_rowx=None)#返回由该列中所有单元格的数据组成的列表
+        whether = self.app_sheet0.col_values(6, start_rowx=1, end_rowx=None)#返回由该列中所有单元格的数据组成的列表
+        # print (CodeList,"\n",whether)
+        autocase_codelist = []
+        for list_code in range(0,len(CodeList)):
+            CodeList[list_code].replace('jwt_', '')
+            if whether[list_code].strip() == 'NA' or whether[list_code].strip() == 'NT':#不要NA用例、NT用例
+                autocase_codelist.append(CodeList[list_code])
+        # print(CodeList)
+        executed_case = [item for item in CodeList if item not in set(autocase_codelist)]
+        return executed_case
+    def app_case_name(self,case_code):
+        CodeList1 = self.app_sheet0.col_values(0, start_rowx=1, end_rowx=None)#返回由该列中所有单元格的数据组成的列表
+
+        CodeList2 = self.app_sheet0.col_values(2, start_rowx=1, end_rowx=None)  # 返回由该列中所有单元格的数据组成的列表
+        autocase_casename = []
+        # print (CodeList1,'\n',CodeList2)
+        match_name =  dict(zip(CodeList1, CodeList2))
+        return match_name[case_code]
+
 if __name__ == '__main__':
 	# u.implicitly_wait(15)
 	video_camera_name = '18726303'
@@ -211,9 +298,9 @@ if __name__ == '__main__':
 		# config = configparser.ConfigParser()
 		# config.read(cfgfile, encoding="utf-8-sig")
 		# print(listx
-		Caselist = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+		# Caselist = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
 		# Caselist = [11,17,18]
-		# Caselist = [19,20]
+		Caselist = [19,20]
 		case_len = len(Caselist)
 		count_success = 0
 		fail_caselog = []
@@ -291,31 +378,28 @@ if __name__ == '__main__':
 				# else:
 				# 	pos5 = '执行编号Veri_' + str(j + 1) + '的用例' + app_element_url[j][0] + ',操作元素不存在'
 				# w = 'APP自动化测试' + '\n' + pos5
-				w = pos3 + '\n' + res
+				# w = pos3 + '\n' + res
 				# w_report += u0 + pos3 + '\n' + '<br />' + '<a href=' + res + '>查看报错图片</a>' + '<br />'  # '<a href='+res+'>图片</a>'
 				w_report += '<a href=' + res + '>查看报错图片</a>' + '<br />'  # '<a href='+res+'>图片</a>'
 				robot_log_w += dt2 + u0 + pos3 + '\n'
+				case_testexceptioninformation = app_excel_field(u0.replace('JiWei.', ''))
+
 				try:
 					interval_time2 = datetime.now()
 					if interval_time2 - start_time > timedelta(seconds=6*int(l0)):
-						message(w)
+						# message(w)
+						DingMessage().dingtalk_testexception(case_testexceptioninformation[0],case_testexceptioninformation[2],case_testexceptioninformation[3],case_testexceptioninformation[4],case_testexceptioninformation[5],res)
 				except:
 					pass
 				SameOperation().quit_app(u)
-				# u.press("back")
-				# sleep(1)
-				# u.press("back")
-				# sleep(1)
-				# u.press("home")
-				# sleep(2)
-				# u.app_stop('com.yoosee')
-				# sleep(2)
 
 				for retry_n in range(1,3):
 				#重试一次
 					try:
 						eval(u0)(u,video_camera_name)
-						message(u0+"重新执行"+str(retry_n)+"次OK")
+						# message(u0+"重新执行"+str(retry_n)+"次OK")
+						DingMessage().dingtalk_testexception(case_testexceptioninformation[0]+"重新执行"+str(retry_n)+"次",case_testexceptioninformation[2],case_testexceptioninformation[3],case_testexceptioninformation[4],case_testexceptioninformation[5],res)
+
 						count_success = count_success + 1
 						break
 					except Exception as err:
@@ -340,14 +424,19 @@ if __name__ == '__main__':
 						pos2 = a1.find('\n', pos1 + 10)
 						pos_1 = a1[pos1 - 23:pos2]
 						pos3 = re.sub('\n', "", pos_1)
-						w = u0+"重新执行"+str(retry_n)+"次仍报错"+pos3+'\n'+ res
+						# w = u0+"重新执行"+str(retry_n)+"次仍报错"+pos3+'\n'+ res
 						# w_report += u0+"重新执行"+str(retry_n)+"次仍报错"+pos3+'\n' +'<br />'+ '<a href='+res+'>查看报错图片</a>' +'<br />' #'<a href='+res+'>图片</a>'
 						w_report += '<a href='+res+'>查看重新测试第'+str(retry_n)+'次报错图片</a>' +'<br />' #'<a href='+res+'>图片</a>'
 						robot_log_w += dt2+u0+"重新执行"+str(retry_n)+"次仍报错"+pos3+'\n'
 						# fail_caselog.append(w_report)
 						# case_number.append(u0)
 						try:
-							message(w)
+							# message(w)
+							DingMessage().dingtalk_testexception(case_testexceptioninformation[0]+"重执行"+str(retry_n)+"次仍",
+																 case_testexceptioninformation[2],
+																 case_testexceptioninformation[3],
+																 case_testexceptioninformation[4],
+																 case_testexceptioninformation[5], res)
 						except:
 							pass
 
@@ -382,20 +471,6 @@ if __name__ == '__main__':
 		robot_log_url = '<a href='+robot_log_singleurl+'>查看机器人日志</a>'
 		# print (robot_log_singleurl)
 
-		# f = open(report_file, 'a')
-		# f.write('自动化测试')
-		# f.write('\n' + '测试人员：钉钉机器人' + '\n')
-		# f.write('\n' + '开始时间：' + str(start_time) + '\n')
-		# f.write('\n' + '合计耗时：' + str(total_time) + '\n')
-		# f.write(
-		# 	'\n' + '测试结果: ' + '共 ' + str(case_len) + '，' + '通过 ' + str(count_success) + '，' + '失败 ' + str(count_case_fail) + '，' + '通过率=' + str(float(count_success/case_len)*100) + '%' + '\n')
-		# f.write(
-		# 	'\n' + '************************************************************失败**********************************************')
-		# # report_message = "功能数:"+str(case_len)+'个，'+"成功:"+str(count_success)+'条，'+'失败'+str(count_case_fail)+'条。'
-		# for i in range(0, len(fail_caselog)):
-		# 	f.write('\n' + fail_caselog[i] + '\n')
-		# # f.flush()
-		# f.close()
 		#html报告
 		table_tr0 = ''
 		html = Template_mixin()
@@ -438,12 +513,5 @@ if __name__ == '__main__':
 
 		if i == 1 or i == 2 or i == 3 or i%30 == 0:#前三次报告发出来，后面每20次发一次报告
 		# if i == 20:
-			dingtalk_robot(str(case_len),str(count_success),str(count_case_fail),report_url)
+			DingMessage().dingtalk_robot(str(case_len),str(count_success),str(count_case_fail),report_url)
 
-		# u.press("recent")
-				# sleep(2)
-				# u(description="清除全部-按钮").click(timeout=5)
-				# sleep(2)
-		# except:
-		# 	w = '生成报告失败'
-		# 	message(w)

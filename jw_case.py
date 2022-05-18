@@ -334,7 +334,7 @@ class JiWei:
             SameOperation().find_deldevices(u,'删除设备')
             u(text='删除设备').click(timeout=5)
             u(resourceId='com.yoosee:id/tv_yes').click(timeout=5)
-        sleep(3)
+        sleep(5)
         assert not u(resourceId='com.yoosee:id/setting_more_iv').exists, "要删除的设备存在"
 
 
@@ -345,7 +345,7 @@ class JiWei:
             SameOperation().find_deldevices(u,'删除设备')
             u(text='删除设备').click(timeout=5)
             u(resourceId='com.yoosee:id/tv_yes').click(timeout=5)
-        sleep(3)
+        sleep(5)
         SameOperation().add_wired(u, video_camera_name)
         sleep(3)
         u(text='购买云存储').click(timeout=5)
@@ -360,7 +360,7 @@ class JiWei:
             SameOperation().find_deldevices(u,'删除设备')
             u(text='删除设备').click(timeout=5)
             u(resourceId='com.yoosee:id/tv_yes').click(timeout=5)
-        sleep(3)
+        sleep(5)
         SameOperation().add_wired(u, video_camera_name)
         sleep(3)
         u(text='查看我的设备').click(timeout=5)
@@ -374,7 +374,7 @@ class JiWei:
             SameOperation().find_deldevices(u,'删除设备')
             u(text='删除设备').click(timeout=5)
             u(resourceId='com.yoosee:id/tv_yes').click(timeout=5)
-        sleep(3)
+        sleep(5)
         SameOperation().add_wired(u, video_camera_name)
         sleep(3)
         u(text='分享给亲友').click(timeout=5)
@@ -416,7 +416,7 @@ class JiWei:
             SameOperation().find_deldevices(u,'删除设备')
             u(text='删除设备').click(timeout=5)
             u(resourceId='com.yoosee:id/tv_yes').click(timeout=5)
-            sleep(2)
+            sleep(5)
             assert u(text="新手教程").wait(timeout=5), '设备列表不存在新手教程'
         else:
             assert u(text="新手教程").wait(timeout=5), '设备列表不存在新手教程'
@@ -429,7 +429,7 @@ class JiWei:
             SameOperation().find_deldevices(u,'删除设备')
             u(text='删除设备').click(timeout=5)
             u(resourceId='com.yoosee:id/tv_yes').click(timeout=5)
-            sleep(2)
+            sleep(5)
             u(resourceId="com.yoosee:id/rl_question").click(timeout=5)
             sleep(3)
             assert u(text="新手教程",resourceId='com.yoosee:id/tv_title').wait(timeout=5), "没有前往帮助中心_添加绑定H5"

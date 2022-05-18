@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
-# import uiautomator2 as u2
+import uiautomator2 as u2
 from time import sleep
 # # 连接被叫设备
-# u = u2.connect('3f3582df')
+u = u2.connect('3f3582df')
 
 # 注册一个名字为"DECLINE"的watcher，当存在UiSelector的description="拒绝"时，点击
 
@@ -53,18 +53,40 @@ from time import sleep
 #     ctx.when("@tb:id/jview_view").when('//*[@content-desc="图片"]').click()
 
     # 其他脚本逻辑
-class SameOperation():
-    # def __init__(self, u: "uiautomator2.Device"):
-    #     self._u = u
-
-    def write_off(self):
-        # if not u(text='登录').exists:
-        #     #退出登录
-        #     u(resourceId='com.yoosee:id/icon_setting_img').click(timeout=5)
-        #     sleep(1)
-        #     u(resourceId='com.yoosee:id/icon_setting_img').click(timeout=5)
-        #     u(resourceId='com.yoosee:id/iv_headimg').click(timeout=5)
-        #     u(resourceId='com.yoosee:id/btn_logout').click(timeout=5)
-        #     sleep(5)
-        print ('1')
+# class SameOperation():
+#     # def __init__(self, u: "uiautomator2.Device"):
+#     #     self._u = u
+#
+#     def write_off(self):
+#         # if not u(text='登录').exists:
+#         #     #退出登录
+#         #     u(resourceId='com.yoosee:id/icon_setting_img').click(timeout=5)
+#         #     sleep(1)
+#         #     u(resourceId='com.yoosee:id/icon_setting_img').click(timeout=5)
+#         #     u(resourceId='com.yoosee:id/iv_headimg').click(timeout=5)
+#         #     u(resourceId='com.yoosee:id/btn_logout').click(timeout=5)
+#         #     sleep(5)
+#         print ('1')
 # SameOperation.write_off(u)
+
+def find_deldevices(u,set_name):
+    screen = u.window_size()
+    u(resourceId="com.yoosee:id/setting_more_iv").click(timeout=5)
+    sleep(2)
+    u(resourceId="com.yoosee:id/pop_set_ll").click(timeout=5)
+    for del_i in range(0, 5):
+        if u(text=set_name).exists:
+            break
+        else:
+            try:
+                u.drag(screen[0] / 2, (screen[1] - 600), screen[0] / 2, screen[1] / 3, 0.3)
+                sleep(3)
+            except:
+                pass
+    sleep(1)
+while True:
+    try:
+        find_deldevices(u,'删除设备')
+        u.press('back')
+    except:
+        break

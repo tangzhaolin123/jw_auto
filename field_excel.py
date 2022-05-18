@@ -71,8 +71,19 @@ class CaseExcel:
         # print(CodeList)
         executed_case = [item for item in CodeList if item not in set(autocase_codelist)]
         return executed_case
+    def app_case_name(self):
+        CodeList1 = self.app_sheet0.col_values(0, start_rowx=1, end_rowx=None)#返回由该列中所有单元格的数据组成的列表
+
+        CodeList2 = self.app_sheet0.col_values(2, start_rowx=1, end_rowx=None)  # 返回由该列中所有单元格的数据组成的列表
+        autocase_casename = []
+        # print (CodeList1,'\n',CodeList2)
+        match_name =  dict(zip(CodeList1, CodeList2))
+        # return match_name[case_code]
+        return match_name
+
+
 # a = CaseExcel()
-print (CaseExcel().auto_caselist())
+print (CaseExcel().app_case_name()['jwt_04'])
     # app_field_list_operate = []
     # app_field_list_reset = []
     # app_dict_1 = {}
