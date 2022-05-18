@@ -14,13 +14,13 @@ import json
 import requests
 import xlrd
 
-u = u1.connect('3f3582df')
+# u = u1.connect('3f3582df')
 # u = u1.connect('VS7P9L4PB6LFMRVW')
-# u = u1.connect('0.0.0.0')
+u = u1.connect('0.0.0.0')
 #debug
-URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
+# URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
 #测试
-# URL = "https://oapi.dingtalk.com/robot/send?access_token=0a200657eeefb39d0180cf7a292f26ed4e7038de9387b0573b5bbd35a5e58050"  # Webhook地址
+URL = "https://oapi.dingtalk.com/robot/send?access_token=0a200657eeefb39d0180cf7a292f26ed4e7038de9387b0573b5bbd35a5e58050"  # Webhook地址
 
 def message(content):
 	try:
@@ -211,9 +211,9 @@ if __name__ == '__main__':
 		# config = configparser.ConfigParser()
 		# config.read(cfgfile, encoding="utf-8-sig")
 		# print(listx
-		# Caselist = [1,2,4,5,6,7,8,9,10,11,12,13,3]
-		Caselist = [11,12,13,14,15,16]
-		# Caselist = [14]
+		Caselist = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+		# Caselist = [11,17,18]
+		# Caselist = [19,20]
 		case_len = len(Caselist)
 		count_success = 0
 		fail_caselog = []
@@ -360,7 +360,8 @@ if __name__ == '__main__':
 					SameOperation().quit_app(u)
 				if u.uiautomator.running() != True:
 					u.uiautomator.start()
-
+			#关闭监控
+			u.watcher.stop()
 		count_case_fail = case_len - count_success
 		#报告详情
 		report_time = datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
@@ -435,8 +436,8 @@ if __name__ == '__main__':
 		report_url = '('+up2qiniu(report_file, "jwtime1", report_file)+')'
 		os.remove(report_file)
 
-		# if i == 1 or i == 2 or i == 3 or i%20 == 0:#前三次报告发出来，后面每20次发一次报告
-		if i == 20:
+		if i == 1 or i == 2 or i == 3 or i%30 == 0:#前三次报告发出来，后面每20次发一次报告
+		# if i == 20:
 			dingtalk_robot(str(case_len),str(count_success),str(count_case_fail),report_url)
 
 		# u.press("recent")

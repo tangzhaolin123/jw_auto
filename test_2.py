@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
-import uiautomator2 as u2
+# import uiautomator2 as u2
 from time import sleep
-# 连接被叫设备
-u = u2.connect('3f3582df')
+# # 连接被叫设备
+# u = u2.connect('3f3582df')
 
 # 注册一个名字为"DECLINE"的watcher，当存在UiSelector的description="拒绝"时，点击
 
@@ -53,17 +53,18 @@ u = u2.connect('3f3582df')
 #     ctx.when("@tb:id/jview_view").when('//*[@content-desc="图片"]').click()
 
     # 其他脚本逻辑
-class SameOperation:
+class SameOperation():
     # def __init__(self, u: "uiautomator2.Device"):
     #     self._u = u
 
-    def write_off(u):
-        if not u(text='登录').exists:
-            #退出登录
-            u(resourceId='com.yoosee:id/icon_setting_img').click(timeout=5)
-            sleep(1)
-            u(resourceId='com.yoosee:id/icon_setting_img').click(timeout=5)
-            u(resourceId='com.yoosee:id/iv_headimg').click(timeout=5)
-            u(resourceId='com.yoosee:id/btn_logout').click(timeout=5)
-            sleep(5)
-SameOperation.write_off(u)
+    def write_off(self):
+        # if not u(text='登录').exists:
+        #     #退出登录
+        #     u(resourceId='com.yoosee:id/icon_setting_img').click(timeout=5)
+        #     sleep(1)
+        #     u(resourceId='com.yoosee:id/icon_setting_img').click(timeout=5)
+        #     u(resourceId='com.yoosee:id/iv_headimg').click(timeout=5)
+        #     u(resourceId='com.yoosee:id/btn_logout').click(timeout=5)
+        #     sleep(5)
+        print ('1')
+# SameOperation.write_off(u)
