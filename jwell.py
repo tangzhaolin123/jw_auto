@@ -14,13 +14,15 @@ import json
 import requests
 import xlrd
 
-u = u1.connect('3f3582df')
+# u = u1.connect('3f3582df')
 # u = u1.connect('VS7P9L4PB6LFMRVW')
-# u = u1.connect('0.0.0.0')
+u = u1.connect('0.0.0.0')
+
+video_camera_name = '18726303'
 #debug
-URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
+# URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
 #测试
-# URL = "https://oapi.dingtalk.com/robot/send?access_token=0a200657eeefb39d0180cf7a292f26ed4e7038de9387b0573b5bbd35a5e58050"  # Webhook地址
+URL = "https://oapi.dingtalk.com/robot/send?access_token=0a200657eeefb39d0180cf7a292f26ed4e7038de9387b0573b5bbd35a5e58050"  # Webhook地址
 
 def message(content):
 	try:
@@ -67,7 +69,7 @@ class DingMessage:
 		# self.URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
 		self.URL = URL
 		self.headers = {'Content-Type':'application/json'}
-	def dingtalk_testexception(self,case_code,case_name,premise_conditions,case_steps,expected_result,result_url):
+	def dingtalk_testexception(self,case_code,case_name,premise_conditions,case_steps,expected_result,result_url,app_version):
 		if "重新" in case_code:
 			data_dict = {
 				"msgtype": "markdown",
@@ -79,6 +81,7 @@ class DingMessage:
 					"> **前置条件:** <font color=#000000>" + premise_conditions + "</font>\n\n"
 					"> **操作步骤:** <font color=#000000>" + case_steps + "</font>\n\n"
 					"> **预期结果:** <font color=#000000>" + expected_result + "</font>\n\n"
+					"> **APK版本:** <font color=#000000>" + app_version + "</font>\n\n"
 				}
 			}
 		else:
@@ -92,7 +95,8 @@ class DingMessage:
 						  "> **前置条件:** <font color=#000000>"+premise_conditions+"</font>\n\n"                        
 						  "> **操作步骤:** <font color=#000000>"+case_steps+"</font>\n\n"
 						  "> **预期结果:** <font color=#000000>"+expected_result+"</font>\n\n"
-						  "[查看报错时截图](" + result_url+')'
+						  "> **APK版本:** <font color=#000000>" + app_version + "</font>\n\n"
+						  "[查看报错时截图](" + result_url + ')'
 				}
 			}
 
@@ -175,6 +179,7 @@ class Template_mixin(object):
             <p class='attribute'><strong>开始时间 : </strong> %(startTime)s</p>
             <p class='attribute'><strong>合计耗时 : </strong> %(totalTime)s</p>
             <p class='attribute'><strong>测试结果 : </strong> %(value)s</p>
+            <p class='attribute'><strong>APK版本 : </strong> %(appVersion)s</p>
             <style type="text/css" media="screen">
         body  { font-family: Microsoft YaHei,Tahoma,arial,helvetica,sans-serif;padding: 20px;}
         </style>
@@ -262,8 +267,8 @@ class CaseExcel:
         return match_name[case_code]
 
 if __name__ == '__main__':
-	# u.implicitly_wait(15)
-	video_camera_name = '18726303'
+	u.implicitly_wait(10.0)
+	app_version = u.app_info('com.yoosee')['versionName']
 	# video_camera_name = input("input:")
 	# u.app_install('http://tangjw.xyz/1234.apk')
 	u.press("back")
@@ -288,7 +293,6 @@ if __name__ == '__main__':
 	u.watcher.when("消息通知说明").press("back")
 	# u.watcher.start()
 
-
 	i = 0
 	while i<1000:
 		i=i+1
@@ -297,10 +301,10 @@ if __name__ == '__main__':
 		# cfgfile = os.getcwd() + '\\dbconf.ini'
 		# config = configparser.ConfigParser()
 		# config.read(cfgfile, encoding="utf-8-sig")
-		# print(listx
-		# Caselist = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
-		# Caselist = [11,17,18]
-		Caselist = [19,20]
+		# print(listx)
+		Caselist = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27]
+		# Caselist = [26,27]
+		# Caselist = [21,22,23,24,25]
 		case_len = len(Caselist)
 		count_success = 0
 		fail_caselog = []
@@ -388,7 +392,7 @@ if __name__ == '__main__':
 					interval_time2 = datetime.now()
 					if interval_time2 - start_time > timedelta(seconds=6*int(l0)):
 						# message(w)
-						DingMessage().dingtalk_testexception(case_testexceptioninformation[0],case_testexceptioninformation[2],case_testexceptioninformation[3],case_testexceptioninformation[4],case_testexceptioninformation[5],res)
+						DingMessage().dingtalk_testexception(case_testexceptioninformation[0],case_testexceptioninformation[2],case_testexceptioninformation[3],case_testexceptioninformation[4],case_testexceptioninformation[5],res,app_version)
 				except:
 					pass
 				SameOperation().quit_app(u)
@@ -398,7 +402,7 @@ if __name__ == '__main__':
 					try:
 						eval(u0)(u,video_camera_name)
 						# message(u0+"重新执行"+str(retry_n)+"次OK")
-						DingMessage().dingtalk_testexception(case_testexceptioninformation[0]+"重新执行"+str(retry_n)+"次",case_testexceptioninformation[2],case_testexceptioninformation[3],case_testexceptioninformation[4],case_testexceptioninformation[5],res)
+						DingMessage().dingtalk_testexception(case_testexceptioninformation[0]+"重新执行"+str(retry_n)+"次",case_testexceptioninformation[2],case_testexceptioninformation[3],case_testexceptioninformation[4],case_testexceptioninformation[5],res,app_version)
 
 						count_success = count_success + 1
 						break
@@ -436,7 +440,7 @@ if __name__ == '__main__':
 																 case_testexceptioninformation[2],
 																 case_testexceptioninformation[3],
 																 case_testexceptioninformation[4],
-																 case_testexceptioninformation[5], res)
+																 case_testexceptioninformation[5], res,app_version)
 						except:
 							pass
 
@@ -499,6 +503,7 @@ if __name__ == '__main__':
 			table_tr=table_tr0,
 			startTime=start_time,
 			totalTime=total_time,
+			appVersion= app_version,
 			caseList=case_url,
 			robotlog= robot_log_url
 		)

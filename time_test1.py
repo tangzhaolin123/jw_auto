@@ -14,7 +14,6 @@
 import json
 import requests
 URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
-
 class DingMessage:
     def __init__(self):
         # self.URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
@@ -73,7 +72,8 @@ class DingMessage:
         json_data =json.dumps(data_dict)
 
         response = requests.post(self.URL, data = json_data,headers = self.headers,timeout=3)
-case_code = 'jwt_01ok'
+app_version = '00.46.00.90'
+case_code = 'jwt_01'
 premise_conditions = 'APP首次安装或覆盖安装'
 case_name = '暂不使用用户服务协议'
 case_steps = '手机桌面进入有看头APP，弹出用户服务协议，点击暂不使用'

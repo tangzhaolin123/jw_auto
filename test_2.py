@@ -90,3 +90,9 @@ while True:
         u.press('back')
     except:
         break
+
+u.press("recent")
+sleep(2)
+u(description="清除全部-按钮").click()
+sleep(2)
+# u(resourceId="com.android.systemui:id/recent_apps").click()

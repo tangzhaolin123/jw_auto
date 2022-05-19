@@ -74,18 +74,20 @@ class SameOperation:
         u.app_stop('com.yoosee')
 
     def add_wired(self,u,video_camera_name):
-        screen = u.window_size()
+        # screen = u.window_size()
         u(resourceId="com.yoosee:id/button_add").click(timeout=5)
         sleep(2)
         u(resourceId='com.yoosee:id/line_add').click(timeout=5)
         u(resourceId="com.yoosee:id/config_cb").click(timeout=5)
         u(text='下一步').click(timeout=5)
-        for wt in range(0, 12):
-            try:
-                u.drag(screen[0] / 2, screen[1] / 3, screen[0] / 2, (screen[1] - 600), 0.2)
-                sleep(8)
-            except:
-                pass
+        for wt in range(0, 13):
+            # try:
+            #     u.drag(screen[0] / 2, screen[1] / 3, screen[0] / 2, (screen[1] - 600), 0.2)
+            #     sleep(8)
+            # except:
+            #     pass
+            u.swipe_ext("down", scale=0.8)
+            sleep(2)
             if u(text=video_camera_name).exists:
                 u(text=video_camera_name).click(timeout=5)
                 sleep(5)
@@ -100,19 +102,20 @@ class SameOperation:
         u(text='确定').click(timeout=5)
         sleep(2)
     def find_deldevices(self,u,set_name):
-        screen = u.window_size()
+        # screen = u.window_size()
         u(resourceId="com.yoosee:id/setting_more_iv").click(timeout=5)
         sleep(2)
         u(resourceId="com.yoosee:id/pop_set_ll").click(timeout=5)
-        for del_i in range(0, 5):
-            if u(text= set_name).exists:
-                break
-            else:
-                try:
-                    u.drag(screen[0] / 2, (screen[1] - 600), screen[0] / 2, screen[1] / 3, 0.3)
-                    sleep(3)
-                except:
-                    pass
+        u(scrollable=True).scroll.to(text=set_name)
+        # for del_i in range(0, 5):
+        #     if u(text= set_name).exists:
+        #         break
+        #     else:
+        #         try:
+        #             u.drag(screen[0] / 2, (screen[1] - 600), screen[0] / 2, screen[1] / 3, 0.3)
+        #             sleep(3)
+        #         except:
+        #             pass
         sleep(1)
 
     def log_in(self,u,user_name,pw_code):
@@ -125,6 +128,15 @@ class SameOperation:
         sleep(5)
         # assert not u(text='登录').exists, '密码正确仍在登录界面，可能网络有问题'
         # sleep(2)
+    def vivo_kill(self,u):
+        u.press("home")
+        sleep(1)
+        u.press("recent")
+        sleep(2)
+        u(description="清除全部-按钮").click()
+        sleep(6)
+
+
 
 class JiWei:
     @classmethod
@@ -164,6 +176,12 @@ class JiWei:
             sleep(5)
             u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
         sleep(3)
+        u(text="推送消息提醒").wait(timeout=10)
+        try:
+            u(text="消息通知说明").wait(timeout=5)
+        except:
+            u.press('back')
+
         SameOperation().quit_app(u)
 
     @classmethod
@@ -449,8 +467,159 @@ class JiWei:
         sleep(5)
         u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
         u(text="推送消息提醒").wait(timeout=10)
-        sleep(3)
+        try:
+            u(text="消息通知说明").wait(timeout=5)
+        except:
+            u.press('back')
+        sleep(2)
+        for i in range(0,5):
+            u.press('home')
+            sleep(6)
+            u.app_stop('com.yoosee')
+            sleep(3)
+            u.app_start('com.yoosee')
+            if u(text="跳过").wait(timeout=8):
+                break
+        assert u(text="跳过").wait(timeout=5), "没有广告"
+        SameOperation().quit_app(u)
 
-        u.app_stop('com.yoosee')
-        u.app_start('com.yoosee')
+    @classmethod
+    def jwt_22(cls, u, video_camera_name):  #国内topon开屏广告-有倒计时5秒展示
+        u.app_clear('com.yoosee')  # 清除应用数据
+        # u.watcher.stop()
         SameOperation().app_go(u)
+        SameOperation().log_in(u, "17722618662", "@tang123")
+        sleep(5)
+        u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
+        u(text="推送消息提醒").wait(timeout=10)
+        try:
+            u(text="消息通知说明").wait(timeout=5)
+        except:
+            u.press('back')
+        sleep(2)
+        for i in range(0, 5):
+            u.press('home')
+            sleep(6)
+            u.app_stop('com.yoosee')
+            sleep(3)
+            u.app_start('com.yoosee')
+            if u(text="跳过").wait(timeout=8):
+                break
+        assert u(text="5").wait(timeout=2) or u(text="2").wait(timeout=3), "没有倒计时"
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_23(cls, u, video_camera_name):  #国内topon开屏广告，不等倒计时点击跳过
+        u.app_clear('com.yoosee')  # 清除应用数据
+        # u.watcher.stop()
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, "17722618662", "@tang123")
+        sleep(5)
+        u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
+        u(text="推送消息提醒").wait(timeout=10)
+        try:
+            u(text="消息通知说明").wait(timeout=5)
+        except:
+            u.press('back')
+        sleep(2)
+        for i in range(0, 5):
+            u.press('home')
+            sleep(6)
+            u.app_stop('com.yoosee')
+            sleep(3)
+            u.app_start('com.yoosee')
+            if u(text="跳过").wait(timeout=8):
+                break
+        u(text="有看头",resourceId="com.yoosee:id/tv_contact").wait(timeout=10), "倒计时结束后没有跳到APP设备列表页面"
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_24(cls, u, video_camera_name):  #国内topon开屏广告-倒计时结束
+        u.app_clear('com.yoosee')  # 清除应用数据
+        # u.watcher.stop()
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, "17722618662", "@tang123")
+        sleep(5)
+        u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
+        u(text="推送消息提醒").wait(timeout=10)
+        try:
+            u(text="消息通知说明").wait(timeout=5)
+        except:
+            u.press('back')
+        sleep(2)
+        for i in range(0, 5):
+            u.press('home')
+            sleep(6)
+            u.app_stop('com.yoosee')
+            sleep(3)
+            u.app_start('com.yoosee')
+            if u(text="跳过").wait(timeout=8):
+                break
+        u(text="跳过").click(timeout=5)
+        u(text="有看头", resourceId="com.yoosee:id/tv_contact").wait(timeout=10), "跳过广告后没有进入到APP设备列表页面"
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_25(cls, u, video_camera_name):  #国内topon开屏广告，查看监控设备10s
+        u.app_clear('com.yoosee')  # 清除应用数据
+        # u.watcher.stop()
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, "17722618662", "@tang123")
+        sleep(5)
+        u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
+        u(text="推送消息提醒").wait(timeout=10)
+        try:
+            u(text="消息通知说明").wait(timeout=5)
+        except:
+            u.press('back')
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        sleep(2)
+        for i in range(0, 5):
+            u.press('home')
+            sleep(6)
+            u.app_stop('com.yoosee')
+            sleep(3)
+            u.app_start('com.yoosee')
+            if u(text="跳过").wait(timeout=8):
+                break
+        u(text="跳过").click(timeout=5)
+        u(text="有看头", resourceId="com.yoosee:id/tv_contact").wait(timeout=10)
+        u.xpath(
+            '//*[@resource-id="com.yoosee:id/lv_contact"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]/android.widget.LinearLayout[1]').click()
+        sleep(12)
+        u(resourceId="com.yoosee:id/center_direction_view").click(timeout=10)
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_26(cls, u, video_camera_name):  #云回放/卡回放切换
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        u(resourceId="com.yoosee:id/tv_playback").click(timeout=5)
+        sleep(1)
+        u(resourceId="com.yoosee:id/tv_download_list").wait(timeout=5)
+        u(resourceId="com.yoosee:id/tv_sdcard_playback").click(timeout=5)
+        sleep(5)
+        assert not u(resourceId="com.yoosee:id/tv_download_list").exists,'没有切换到卡回放'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_27(cls, u, video_camera_name):  #卡回放切换切换日期到过去
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        u(resourceId="com.yoosee:id/tv_playback").click(timeout=5)
+        u(resourceId="com.yoosee:id/tv_sdcard_playback").click(timeout=5)
+        u(resourceId="com.yoosee:id/fl_videoplayer_parent").wait(timeout=5)
+        u(resourceId='com.yoosee:id/date_tv')[2].click(timeout=5)
+        SameOperation().quit_app(u)
