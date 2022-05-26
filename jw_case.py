@@ -472,7 +472,7 @@ class JiWei:
         except:
             u.press('back')
         sleep(2)
-        for i in range(0,5):
+        for i in range(0,10):
             u.press('home')
             sleep(6)
             u.app_stop('com.yoosee')
@@ -497,7 +497,7 @@ class JiWei:
         except:
             u.press('back')
         sleep(2)
-        for i in range(0, 5):
+        for i in range(0, 10):
             u.press('home')
             sleep(6)
             u.app_stop('com.yoosee')
@@ -505,7 +505,7 @@ class JiWei:
             u.app_start('com.yoosee')
             if u(text="跳过").wait(timeout=8):
                 break
-        assert u(text="5").wait(timeout=2) or u(text="2").wait(timeout=3), "没有倒计时"
+        assert u(text="5").wait(timeout=2) or u(text="跳过").wait(timeout=3), "没有倒计时"
         SameOperation().quit_app(u)
 
     @classmethod
@@ -522,7 +522,7 @@ class JiWei:
         except:
             u.press('back')
         sleep(2)
-        for i in range(0, 5):
+        for i in range(0, 10):
             u.press('home')
             sleep(6)
             u.app_stop('com.yoosee')
@@ -547,7 +547,7 @@ class JiWei:
         except:
             u.press('back')
         sleep(2)
-        for i in range(0, 5):
+        for i in range(0, 10):
             u.press('home')
             sleep(6)
             u.app_stop('com.yoosee')
@@ -578,7 +578,7 @@ class JiWei:
             SameOperation().add_wired(u, video_camera_name)
             u.press('back')
         sleep(2)
-        for i in range(0, 5):
+        for i in range(0, 10):
             u.press('home')
             sleep(6)
             u.app_stop('com.yoosee')
@@ -622,4 +622,148 @@ class JiWei:
         u(resourceId="com.yoosee:id/tv_sdcard_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/fl_videoplayer_parent").wait(timeout=5)
         u(resourceId='com.yoosee:id/date_tv')[2].click(timeout=5)
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_28(cls, u, video_camera_name):  # 安装卸载-卸载成功
+        try:
+            app_us = u.app_info('com.yoosee')
+        except:
+            u.app_install('1.apk')
+        u.app_uninstall('com.yoosee')
+        app_exist= 0
+        try:
+            app_us = u.app_info('com.yoosee')
+        except:
+            app_exist = 1
+        assert app_exist == 1,'app卸载不成功'
+
+    @classmethod
+    def jwt_29(cls, u, video_camera_name):  # 安装卸载-卸载后安装成功
+        try:
+            app_us = u.app_info('com.yoosee')
+        except:
+            u.app_install('1.apk')
+        u.app_uninstall('com.yoosee')
+        u.app_install('1.apk')
+        app_exist = 0
+        try:
+            app_us = u.app_info('com.yoosee')
+        except:
+            app_exist = 1
+        assert app_exist == 0,'app安装不成功'
+
+    @classmethod
+    def jwt_30(cls, u, video_camera_name):  # 安装卸载-覆盖安装成功
+        try:
+            app_us = u.app_info('com.yoosee')
+        except:
+            u.app_install('1.apk')
+            SameOperation().app_go(u)
+            SameOperation().log_in(u, "17722618662", "@tang123")
+            sleep(5)
+            u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
+            u(text="推送消息提醒").wait(timeout=10)
+            try:
+                u(text="消息通知说明").wait(timeout=5)
+            except:
+                u.press('back')
+            SameOperation().quit_app(u)
+        u.app_install('1.apk')
+        app_exist = 0
+        try:
+            app_us = u.app_info('com.yoosee')
+        except:
+            app_exist = 1
+        assert app_exist == 0, 'app覆盖安装不成功'
+
+    @classmethod
+    def jwt_31(cls, u, video_camera_name):  # 安装卸载-覆盖安装成功不需要重新输入账号密码
+        try:
+            app_us = u.app_info('com.yoosee')
+        except:
+            u.app_install('1.apk')
+            SameOperation().app_go(u)
+            SameOperation().log_in(u, "17722618662", "@tang123")
+            sleep(5)
+            u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
+            u(text="推送消息提醒").wait(timeout=10)
+            try:
+                u(text="消息通知说明").wait(timeout=5)
+            except:
+                u.press('back')
+            SameOperation().quit_app(u)
+        u.app_install('1.apk')
+        sleep(5)
+        SameOperation().app_go(u)
+        assert u(text="有看头",resourceId="com.yoosee:id/tv_contact").exists,'未进入首页即覆盖安装后要输入账号密码'
+
+    @classmethod
+    def jwt_32(cls, u, video_camera_name):  # 安装卸载-覆盖安装成功不需要重新输入账号密码
+        try:
+            app_us = u.app_info('com.yoosee')
+            SameOperation().app_go(u)
+            if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+                pass
+            else:
+                SameOperation().add_wired(u, video_camera_name)
+                u.press('back')
+            SameOperation().quit_app(u)
+        except:
+            u.app_install('1.apk')
+            SameOperation().app_go(u)
+            SameOperation().log_in(u, "17722618662", "@tang123")
+            sleep(5)
+            u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
+            u(text="推送消息提醒").wait(timeout=10)
+            try:
+                u(text="消息通知说明").wait(timeout=5)
+            except:
+                u.press('back')
+            if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+                pass
+            else:
+                SameOperation().add_wired(u, video_camera_name)
+                u.press('back')
+            SameOperation().quit_app(u)
+        u.app_install('1.apk')
+        sleep(5)
+        SameOperation().app_go(u)
+        assert u(resourceId='com.yoosee:id/setting_more_iv').exists,'覆盖安装后绑定设备不存在'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_33(cls, u, video_camera_name):  # 安装卸载-覆盖安装成功不需要重新输入账号密码
+        try:
+            app_us = u.app_info('com.yoosee')
+            SameOperation().app_go(u)
+            if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+                pass
+            else:
+                SameOperation().add_wired(u, video_camera_name)
+                u.press('back')
+            SameOperation().quit_app(u)
+        except:
+            u.app_install('1.apk')
+            SameOperation().app_go(u)
+            SameOperation().log_in(u, "17722618662", "@tang123")
+            sleep(5)
+            u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
+            u(text="推送消息提醒").wait(timeout=10)
+            try:
+                u(text="消息通知说明").wait(timeout=5)
+            except:
+                u.press('back')
+            if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+                pass
+            else:
+                SameOperation().add_wired(u, video_camera_name)
+                u.press('back')
+            SameOperation().quit_app(u)
+        u.app_install('1.apk')
+        SameOperation().app_go(u)
+        u.xpath(
+            '//*[@resource-id="com.yoosee:id/lv_contact"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]/android.widget.LinearLayout[1]').click()
+        sleep(12)
+        u(resourceId="com.yoosee:id/center_direction_view").click(timeout=10)
         SameOperation().quit_app(u)

@@ -265,10 +265,38 @@ class CaseExcel:
         # print (CodeList1,'\n',CodeList2)
         match_name =  dict(zip(CodeList1, CodeList2))
         return match_name[case_code]
+#auto upgrade version
+class AutoUpgrade:
+    def app_id(self):
+        URL = "http://www.pgyer.com/apiv1/app/getAppKeyByShortcut"
+        headers = {'Content-Type':'application/json'}
+
+        data = {
+            "shortcut": (None, "ptY3"),
+            "_api_key": (None, "cbe11636fc4031641cccbcb648227d6c")
+        }
+        response = requests.request("POST", URL, files=data)
+        jdata = json.loads(response.text)
+        # print(type(jdata),jdata)
+        return jdata['data']['appKey']
+
+    def down_app(self):
+        data_dict = {
+            "aKey": AutoUpgrade.app_id(self),
+            "_api_key": 'cbe11636fc4031641cccbcb648227d6c'
+        }
+        install_url = 'http://www.pgyer.com/apiv1/app/install?aKey=%s&_api_key=%s' % (
+        data_dict['aKey'], data_dict['_api_key'])
+        # print(install_url)
+        url = install_url
+        r = requests.get(url, stream=True)
+        f = open("1.apk", "wb")
+        for chunk in r.iter_content(chunk_size=512):
+            if chunk:
+                f.write(chunk)
+        f.close()
 
 if __name__ == '__main__':
-	u.implicitly_wait(10.0)
-	app_version = u.app_info('com.yoosee')['versionName']
 	# video_camera_name = input("input:")
 	# u.app_install('http://tangjw.xyz/1234.apk')
 	u.press("back")
@@ -281,6 +309,16 @@ if __name__ == '__main__':
 	sleep(1)
 	u.press("home")
 	sleep(3)
+	# 版本升级
+	# AutoUpgrade().down_app()
+	u.watcher.when('继续安装').click()
+	u.watcher.start()
+	# u.app_install('1.apk')
+	try:
+		app_version = u.app_info('com.yoosee')['versionName']
+	except:
+		u.app_install('1.apk')
+		app_version = u.app_info('com.yoosee')['versionName']
 
 	#监控弹框
 	u.watcher.when("同意").click()
@@ -292,7 +330,7 @@ if __name__ == '__main__':
 	u.watcher.when("我知道了").click()
 	u.watcher.when("消息通知说明").press("back")
 	# u.watcher.start()
-
+	u.implicitly_wait(10.0)
 	i = 0
 	while i<1000:
 		i=i+1
@@ -302,9 +340,9 @@ if __name__ == '__main__':
 		# config = configparser.ConfigParser()
 		# config.read(cfgfile, encoding="utf-8-sig")
 		# print(listx)
-		Caselist = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27]
-		# Caselist = [26,27]
-		# Caselist = [21,22,23,24,25]
+		Caselist = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
+		# Caselist = [30,31,32,33]
+		# Caselist = [30,31]
 		case_len = len(Caselist)
 		count_success = 0
 		fail_caselog = []
@@ -519,4 +557,8 @@ if __name__ == '__main__':
 		if i == 1 or i == 2 or i == 3 or i%30 == 0:#前三次报告发出来，后面每20次发一次报告
 		# if i == 20:
 			DingMessage().dingtalk_robot(str(case_len),str(count_success),str(count_case_fail),report_url)
+	# u.app_uninstall('com.yoosee')
+		if count_case_fail >=20:
+			sleep(8000)
+			break
 
