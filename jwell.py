@@ -14,15 +14,15 @@ import json
 import requests
 import xlrd
 
-# u = u1.connect('3f3582df')
+#u = u1.connect('3f3582df')
 # u = u1.connect('VS7P9L4PB6LFMRVW')
 u = u1.connect('0.0.0.0')
 
 video_camera_name = '18726303'
 #debug
-# URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
+URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
 #测试
-URL = "https://oapi.dingtalk.com/robot/send?access_token=0a200657eeefb39d0180cf7a292f26ed4e7038de9387b0573b5bbd35a5e58050"  # Webhook地址
+# URL = "https://oapi.dingtalk.com/robot/send?access_token=0a200657eeefb39d0180cf7a292f26ed4e7038de9387b0573b5bbd35a5e58050"  # Webhook地址
 
 def message(content):
 	try:
@@ -62,7 +62,7 @@ def dingtalk_robot(total,pass_total,fial_total,report_url):
 
     json_data =json.dumps(data_dict)
 
-    response = requests.post(URL, data = json_data,headers = headers,timeout=3)
+    response = requests.post(URL, data = json_data,headers = headers,timeout=5)
 
 class DingMessage:
 	def __init__(self):
@@ -101,7 +101,7 @@ class DingMessage:
 			}
 
 		json_data =json.dumps(data_dict)
-		response = requests.post(self.URL, data = json_data,headers = self.headers,timeout=3)
+		response = requests.post(self.URL, data = json_data,headers = self.headers,timeout=5)
 
 	def dingtalk_robot(self,total,pass_total,fial_total,report_url):
 		data_dict = {
@@ -120,7 +120,7 @@ class DingMessage:
 
 		json_data =json.dumps(data_dict)
 
-		response = requests.post(self.URL, data = json_data,headers = self.headers,timeout=3)
+		response = requests.post(self.URL, data = json_data,headers = self.headers,timeout=5)
 # access_key = 'gMQ_x2DD6xcBsHf7Bwn4iRGFLwLilsmiW5DG3RsI'
 # secret_key = 'CAvmXjwUEZm8d8h_gStjOLKqy9ssx6mSHtlcFsdf'
 
@@ -333,6 +333,10 @@ if __name__ == '__main__':
 	u.implicitly_wait(10.0)
 	i = 0
 	while i<1000:
+		u.app_start('com.termux')
+		sleep(1)
+		u.press("home")
+		sleep(1)
 		i=i+1
 		print(('Testing time: %d') % (i))
 		#list1 = [1]
@@ -342,7 +346,7 @@ if __name__ == '__main__':
 		# print(listx)
 		Caselist = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
 		# Caselist = [30,31,32,33]
-		# Caselist = [30,31]
+		#Caselist = [21,22,23,24,25]
 		case_len = len(Caselist)
 		count_success = 0
 		fail_caselog = []
@@ -355,6 +359,7 @@ if __name__ == '__main__':
 			#print(a, len(list1))
 			w_report = ''
 			robot_log_w = ''
+			#监视器控制
 			if a0 == 1 or a0 == 2:
 				# 停止所有监视
 				u.watcher.stop()
@@ -489,7 +494,7 @@ if __name__ == '__main__':
 					# if a0 > 7:
 					# 	break
 					SameOperation().quit_app(u)
-				if u.uiautomator.running() != True:
+				if u.uiautomator.running():
 					u.uiautomator.start()
 			#关闭监控
 			u.watcher.stop()

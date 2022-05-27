@@ -470,7 +470,8 @@ class JiWei:
         try:
             u(text="消息通知说明").wait(timeout=5)
         except:
-            u.press('back')
+            u(resourceId="com.yoosee:id/iv_back").click(timeout=5)
+            # u.press('back')
         sleep(2)
         for i in range(0,10):
             u.press('home')
@@ -478,9 +479,9 @@ class JiWei:
             u.app_stop('com.yoosee')
             sleep(3)
             u.app_start('com.yoosee')
-            if u(text="跳过").wait(timeout=8):
+            if u.xpath("摇一摇").wait(timeout=8):
                 break
-        assert u(text="跳过").wait(timeout=5), "没有广告"
+        assert u(text="跳过").exists or u(resourceId="com.byted.pangle:id/tt_splash_skip_btn").exists, "没有广告"
         SameOperation().quit_app(u)
 
     @classmethod
@@ -495,7 +496,8 @@ class JiWei:
         try:
             u(text="消息通知说明").wait(timeout=5)
         except:
-            u.press('back')
+            u(resourceId="com.yoosee:id/iv_back").click(timeout=5)
+            # u.press('back')
         sleep(2)
         for i in range(0, 10):
             u.press('home')
@@ -503,9 +505,9 @@ class JiWei:
             u.app_stop('com.yoosee')
             sleep(3)
             u.app_start('com.yoosee')
-            if u(text="跳过").wait(timeout=8):
+            if u.xpath("摇一摇").wait(timeout=8):
                 break
-        assert u(text="5").wait(timeout=2) or u(text="跳过").wait(timeout=3), "没有倒计时"
+        assert u(text="5").wait(timeout=2) or u(resourceId="com.byted.pangle:id/tt_splash_skip_btn").wait(timeout=2), "没有广告"
         SameOperation().quit_app(u)
 
     @classmethod
@@ -520,7 +522,8 @@ class JiWei:
         try:
             u(text="消息通知说明").wait(timeout=5)
         except:
-            u.press('back')
+            u(resourceId="com.yoosee:id/iv_back").click(timeout=5)
+            # u.press('back')
         sleep(2)
         for i in range(0, 10):
             u.press('home')
@@ -528,7 +531,7 @@ class JiWei:
             u.app_stop('com.yoosee')
             sleep(3)
             u.app_start('com.yoosee')
-            if u(text="跳过").wait(timeout=8):
+            if u.xpath("摇一摇").wait(timeout=8):
                 break
         u(text="有看头",resourceId="com.yoosee:id/tv_contact").wait(timeout=10), "倒计时结束后没有跳到APP设备列表页面"
         SameOperation().quit_app(u)
@@ -545,7 +548,8 @@ class JiWei:
         try:
             u(text="消息通知说明").wait(timeout=5)
         except:
-            u.press('back')
+            u(resourceId="com.yoosee:id/iv_back").click(timeout=5)
+            # u.press('back')
         sleep(2)
         for i in range(0, 10):
             u.press('home')
@@ -553,9 +557,12 @@ class JiWei:
             u.app_stop('com.yoosee')
             sleep(3)
             u.app_start('com.yoosee')
-            if u(text="跳过").wait(timeout=8):
+            if u.xpath("摇一摇").wait(timeout=8):
                 break
-        u(text="跳过").click(timeout=5)
+        if u(text="跳过").exists:
+            u(text="跳过").click(timeout=5)
+        elif u(resourceId="com.byted.pangle:id/tt_splash_skip_btn").exists:
+            u(resourceId="com.byted.pangle:id/tt_splash_skip_btn").click(timeout=5)
         u(text="有看头", resourceId="com.yoosee:id/tv_contact").wait(timeout=10), "跳过广告后没有进入到APP设备列表页面"
         SameOperation().quit_app(u)
 
@@ -571,7 +578,8 @@ class JiWei:
         try:
             u(text="消息通知说明").wait(timeout=5)
         except:
-            u.press('back')
+            u(resourceId="com.yoosee:id/iv_back").click(timeout=5)
+            # u.press('back')
         if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
             pass
         else:
@@ -584,9 +592,12 @@ class JiWei:
             u.app_stop('com.yoosee')
             sleep(3)
             u.app_start('com.yoosee')
-            if u(text="跳过").wait(timeout=8):
+            if u.xpath("摇一摇").wait(timeout=8):
                 break
-        u(text="跳过").click(timeout=5)
+        if u(text="跳过").exists:
+            u(text="跳过").click(timeout=5)
+        elif u(resourceId="com.byted.pangle:id/tt_splash_skip_btn").exists:
+            u(resourceId="com.byted.pangle:id/tt_splash_skip_btn").click(timeout=5)
         u(text="有看头", resourceId="com.yoosee:id/tv_contact").wait(timeout=10)
         u.xpath(
             '//*[@resource-id="com.yoosee:id/lv_contact"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]/android.widget.LinearLayout[1]').click()
@@ -681,6 +692,13 @@ class JiWei:
     def jwt_31(cls, u, video_camera_name):  # 安装卸载-覆盖安装成功不需要重新输入账号密码
         try:
             app_us = u.app_info('com.yoosee')
+            SameOperation().app_go(u)
+            if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+                pass
+            else:
+                SameOperation().add_wired(u, video_camera_name)
+                u.press('back')
+            SameOperation().quit_app(u)
         except:
             u.app_install('1.apk')
             SameOperation().app_go(u)
@@ -699,7 +717,7 @@ class JiWei:
         assert u(text="有看头",resourceId="com.yoosee:id/tv_contact").exists,'未进入首页即覆盖安装后要输入账号密码'
 
     @classmethod
-    def jwt_32(cls, u, video_camera_name):  # 安装卸载-覆盖安装成功不需要重新输入账号密码
+    def jwt_32(cls, u, video_camera_name):  # 安装卸载-覆盖安装成功App内绑定设备显示正常
         try:
             app_us = u.app_info('com.yoosee')
             SameOperation().app_go(u)
@@ -733,7 +751,7 @@ class JiWei:
         SameOperation().quit_app(u)
 
     @classmethod
-    def jwt_33(cls, u, video_camera_name):  # 安装卸载-覆盖安装成功不需要重新输入账号密码
+    def jwt_33(cls, u, video_camera_name):  # 安装卸载-覆盖安装检查进入监控是否正常
         try:
             app_us = u.app_info('com.yoosee')
             SameOperation().app_go(u)
