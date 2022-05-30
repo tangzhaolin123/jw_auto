@@ -785,3 +785,76 @@ class JiWei:
         sleep(12)
         u(resourceId="com.yoosee:id/center_direction_view").click(timeout=10)
         SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_34(cls, u, video_camera_name):  # 监控页设置入口
+        SameOperation().app_go(u)
+        if u(text="有线连接自动化测试", resourceId="com.yoosee:id/tv_name").exists or u(text=video_camera_name,
+                                                                               resourceId="com.yoosee:id/tv_name").exists:
+            u.xpath(
+                '//*[@resource-id="com.yoosee:id/lv_contact"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]/android.widget.LinearLayout[1]').click()
+            sleep(5)
+            u(resourceId="com.yoosee:id/iv_set").click(timeout=10)
+            assert u(text="设置", resourceId="com.yoosee:id/tv_setting").wait(timeout=5), "没有进入监控页设置入口"
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_35(cls, u, video_camera_name):  # 设备列表页设置入口
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').exists:
+            SameOperation().find_deldevices(u,'画面与声音')
+            assert u(text="设置", resourceId="com.yoosee:id/tv_setting").wait(timeout=5), "没有进入监控页设置入口"
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_36(cls, u, video_camera_name):  # 卡回放-视频播放H265视频
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        u(resourceId="com.yoosee:id/tv_playback").click(timeout=5)
+        u(resourceId="com.yoosee:id/tv_sdcard_playback").click(timeout=5)
+        sleep(10)
+        if not u(resourceId="com.yoosee:id/iv_playback_fast").exists:
+            u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
+            sleep(1)
+        play_status = u(resourceId="com.yoosee:id/iv_playback_fast").info
+        sleep(1)
+        assert play_status['enabled'] == True, '没有自动播放'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_37(cls, u, video_camera_name):  # 卡回放-时间轴拖动
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        u(resourceId="com.yoosee:id/tv_playback").click(timeout=5)
+        u(resourceId="com.yoosee:id/tv_sdcard_playback").click(timeout=5)
+        u(resourceId='com.yoosee:id/fl_videoplayer_parent').wait(timeout=5)
+        timeline_icon_coordinates = u(resourceId='com.yoosee:id/fl_videoplayer_parent').center()
+        u.drag(timeline_icon_coordinates[0] - 100, timeline_icon_coordinates[1], timeline_icon_coordinates[0],
+               timeline_icon_coordinates[1], 0.2)
+        sleep(5)
+        u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
+        sleep(1)
+        if not u(resourceId="com.yoosee:id/iv_playback_fast").exists:
+            u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
+            sleep(1)
+        play_status = u(resourceId="com.yoosee:id/iv_playback_fast").info
+        sleep(1)
+        assert play_status['enabled'] == True, '时间轴向前快速滑动没有自动播放'
+        u.drag(timeline_icon_coordinates[0] + 100, timeline_icon_coordinates[1], timeline_icon_coordinates[0],
+               timeline_icon_coordinates[1], 0.2)
+        sleep(5)
+        if not u(resourceId="com.yoosee:id/iv_playback_fast").exists:
+            u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
+            sleep(1)
+        play_status = u(resourceId="com.yoosee:id/iv_playback_fast").info
+        sleep(1)
+        assert play_status['enabled'] == True, '时间轴向后快速滑动没有自动播放'
+        SameOperation().quit_app(u)

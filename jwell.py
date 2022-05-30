@@ -14,7 +14,7 @@ import json
 import requests
 import xlrd
 
-#u = u1.connect('3f3582df')
+# u = u1.connect('3f3582df')
 # u = u1.connect('VS7P9L4PB6LFMRVW')
 u = u1.connect('0.0.0.0')
 
@@ -297,6 +297,16 @@ class AutoUpgrade:
         f.close()
 
 if __name__ == '__main__':
+	#配置文件读取参数
+	# cfgpath = "dbconf.ini"
+	# config = configparser.ConfigParser()
+	# config.read(cfgpath, encoding="gb2312")
+	# listx = config.get('tang1', 'x1')
+	# config.set("tang1", "x1", str(list3))
+	# f = open(cfgpath, "w")
+	# config.write(f)
+	# f.close()
+
 	# video_camera_name = input("input:")
 	# u.app_install('http://tangjw.xyz/1234.apk')
 	u.press("back")
@@ -309,8 +319,10 @@ if __name__ == '__main__':
 	sleep(1)
 	u.press("home")
 	sleep(3)
-	# 版本升级
-	# AutoUpgrade().down_app()
+	if not os.path.exists('1.apk'):
+		#没有版本，下载版本
+		AutoUpgrade().down_app()
+
 	u.watcher.when('继续安装').click()
 	u.watcher.start()
 	# u.app_install('1.apk')
@@ -344,9 +356,9 @@ if __name__ == '__main__':
 		# config = configparser.ConfigParser()
 		# config.read(cfgfile, encoding="utf-8-sig")
 		# print(listx)
-		Caselist = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
+		Caselist = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37]
 		# Caselist = [30,31,32,33]
-		#Caselist = [21,22,23,24,25]
+		# Caselist = [36,37]
 		case_len = len(Caselist)
 		count_success = 0
 		fail_caselog = []
@@ -494,7 +506,7 @@ if __name__ == '__main__':
 					# if a0 > 7:
 					# 	break
 					SameOperation().quit_app(u)
-				if u.uiautomator.running():
+				if u.uiautomator.running() == False:
 					u.uiautomator.start()
 			#关闭监控
 			u.watcher.stop()
@@ -563,7 +575,7 @@ if __name__ == '__main__':
 		# if i == 20:
 			DingMessage().dingtalk_robot(str(case_len),str(count_success),str(count_case_fail),report_url)
 	# u.app_uninstall('com.yoosee')
-		if count_case_fail >=20:
+		if count_case_fail >=10:
 			sleep(8000)
 			break
 
