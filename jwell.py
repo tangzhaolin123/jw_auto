@@ -13,14 +13,15 @@ import os
 import json
 import requests
 import xlrd
+import configparser
 
 # u = u1.connect('3f3582df')
 # u = u1.connect('VS7P9L4PB6LFMRVW')
-u = u1.connect('0.0.0.0')
+# u = u1.connect('0.0.0.0')
 
-video_camera_name = '18726303'
+# video_camera_name = '18726303'
 #debug
-URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
+# URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
 #测试
 # URL = "https://oapi.dingtalk.com/robot/send?access_token=0a200657eeefb39d0180cf7a292f26ed4e7038de9387b0573b5bbd35a5e58050"  # Webhook地址
 
@@ -298,17 +299,17 @@ class AutoUpgrade:
 
 if __name__ == '__main__':
 	#配置文件读取参数
-	# cfgpath = "dbconf.ini"
-	# config = configparser.ConfigParser()
-	# config.read(cfgpath, encoding="gb2312")
-	# listx = config.get('tang1', 'x1')
-	# config.set("tang1", "x1", str(list3))
-	# f = open(cfgpath, "w")
-	# config.write(f)
-	# f.close()
+	cfgpath = "dbconf.ini"
+	config = configparser.ConfigParser()
+	config.read(cfgpath, encoding="gb2312")
+	video_camera_name = config.get('sec1', '摄像头设备ID')
+	URL = config.get('sec1', '钉钉消息Webhook地址')
+	devices_name = config.get('sec1', '手机设备名')
+	execute_or_not = config.get('sec1', '是否执行远程升级')
+	rounds = config.get('sec2', '用例执行轮次')
+	u = u1.connect(devices_name)
 
 	# video_camera_name = input("input:")
-	# u.app_install('http://tangjw.xyz/1234.apk')
 	u.press("back")
 	sleep(1)
 	u.press("back")
@@ -319,13 +320,14 @@ if __name__ == '__main__':
 	sleep(1)
 	u.press("home")
 	sleep(3)
-	if not os.path.exists('1.apk'):
-		#没有版本，下载版本
-		AutoUpgrade().down_app()
 
 	u.watcher.when('继续安装').click()
 	u.watcher.start()
 	# u.app_install('1.apk')
+	if not os.path.exists('1.apk'):
+		#没有版本，下载版本
+		AutoUpgrade().down_app()
+	#没有安装，安装APP
 	try:
 		app_version = u.app_info('com.yoosee')['versionName']
 	except:
@@ -336,6 +338,7 @@ if __name__ == '__main__':
 	u.watcher.when("同意").click()
 	u.watcher.when("允许").click()
 	u.watcher.when("仅在前台使用应用时允许").click()
+	u.watcher.when("仅在使用该应用时允许").click()
 	u.watcher.when("双指可放大画面").click()
 	u.watcher.when("可以尝试上下左右拖动画面").click()
 	u.watcher.when("深入了解").click()
@@ -344,21 +347,24 @@ if __name__ == '__main__':
 	# u.watcher.start()
 	u.implicitly_wait(10.0)
 	i = 0
-	while i<1000:
-		u.app_start('com.termux')
-		sleep(1)
-		u.press("home")
-		sleep(1)
+	while i<int(rounds):
+		old_appid = config.get('sec1', 'APP的id')
+		new_appid = AutoUpgrade().app_id()
+		if execute_or_not == '是':
+			if old_appid != new_appid:
+				AutoUpgrade().down_app()
+				u.app_install('1.apk')
+				sleep(3)
+				app_version = u.app_info('com.yoosee')['versionName']
+				config.set("sec1", "APP的id", new_appid)
+				config.write(open("dbconf.ini", "w"))
+
 		i=i+1
 		print(('Testing time: %d') % (i))
-		#list1 = [1]
-		# cfgfile = os.getcwd() + '\\dbconf.ini'
-		# config = configparser.ConfigParser()
-		# config.read(cfgfile, encoding="utf-8-sig")
-		# print(listx)
-		Caselist = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37]
 		# Caselist = [30,31,32,33]
 		# Caselist = [36,37]
+		Caselist = config.get('sec2', '执行的用例').split(",")
+
 		case_len = len(Caselist)
 		count_success = 0
 		fail_caselog = []
@@ -367,10 +373,15 @@ if __name__ == '__main__':
 		start_time = datetime.now()
 		# u.watcher.stop()
 		for l0 in range(1, len(Caselist) + 1):
-			a0 = Caselist[l0 - 1]
+			a0 = int(Caselist[l0 - 1])
 			#print(a, len(list1))
 			w_report = ''
 			robot_log_w = ''
+			#termux后台运行
+			u.app_start('com.termux')
+			sleep(1)
+			u.press("home")
+			sleep(1)
 			#监视器控制
 			if a0 == 1 or a0 == 2:
 				# 停止所有监视

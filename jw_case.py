@@ -821,7 +821,7 @@ class JiWei:
             u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
             sleep(1)
         play_status = u(resourceId="com.yoosee:id/iv_playback_fast").info
-        sleep(1)
+        sleep(3)
         assert play_status['enabled'] == True, '没有自动播放'
         SameOperation().quit_app(u)
 
@@ -846,7 +846,7 @@ class JiWei:
             u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
             sleep(1)
         play_status = u(resourceId="com.yoosee:id/iv_playback_fast").info
-        sleep(1)
+        sleep(3)
         assert play_status['enabled'] == True, '时间轴向前快速滑动没有自动播放'
         u.drag(timeline_icon_coordinates[0] + 100, timeline_icon_coordinates[1], timeline_icon_coordinates[0],
                timeline_icon_coordinates[1], 0.2)
@@ -855,6 +855,6 @@ class JiWei:
             u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
             sleep(1)
         play_status = u(resourceId="com.yoosee:id/iv_playback_fast").info
-        sleep(1)
+        sleep(3)
         assert play_status['enabled'] == True, '时间轴向后快速滑动没有自动播放'
         SameOperation().quit_app(u)
