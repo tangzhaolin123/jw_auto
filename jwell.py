@@ -53,7 +53,7 @@ def dingtalk_robot(total,pass_total,fial_total,report_url):
         "markdown":{
             "title":"测试报告",
            "text":"#### 测试报告 \n\n"
-				  "![report](http://tangjw.xyz/report.png)"
+				  "![report](http://tangjw.xyz/test_report.png)"
                   "> **用例总数:** **"+str(total)+"**\n\n"
                   "> **PASS:** **<font color=#7CFCOO>"+str(pass_total)+"</font>**\n\n"
                   "> **FAIL:** **<font color=#FF0000>"+str(fial_total)+"</font>**\n\n"
@@ -70,7 +70,7 @@ class DingMessage:
 		# self.URL = "https://oapi.dingtalk.com/robot/send?access_token=c553bbae288a266b5d2d4a382a41b54f332cdab43c1e6a94cff949766c5e05f6"  # Webhook地址
 		self.URL = URL
 		self.headers = {'Content-Type':'application/json'}
-	def dingtalk_testexception(self,case_code,case_name,premise_conditions,case_steps,expected_result,result_url,app_version):
+	def dingtalk_testexception(self,case_code,case_name,premise_conditions,case_steps,expected_result,result_url,app_version,result_logurl):
 		if "重新" in case_code:
 			data_dict = {
 				"msgtype": "markdown",
@@ -97,7 +97,8 @@ class DingMessage:
 						  "> **操作步骤:** <font color=#000000>"+case_steps+"</font>\n\n"
 						  "> **预期结果:** <font color=#000000>"+expected_result+"</font>\n\n"
 						  "> **APK版本:** <font color=#000000>" + app_version + "</font>\n\n"
-						  "[查看报错时截图](" + result_url + ')'
+						  "[查看报错时截图](" + result_url + ')\n\n'
+						  "[查看APP日志](" + result_logurl + ')'
 				}
 			}
 
@@ -111,7 +112,7 @@ class DingMessage:
 			"markdown":{
 				"title":"测试报告",
 			   "text":"#### 测试报告 \n\n"
-					  "![report](http://tangjw.xyz/report.png)"
+					  "![report](http://tangjw.xyz/test_report.png)"
 					  "> **用例总数:** **"+str(total)+"**\n\n"
 					  "> **PASS:** **<font color=#7CFCOO>"+str(pass_total)+"</font>**\n\n"
 					  "> **FAIL:** **<font color=#FF0000>"+str(fial_total)+"</font>**\n\n"
@@ -307,6 +308,8 @@ if __name__ == '__main__':
 	devices_name = config.get('sec1', '手机设备名')
 	execute_or_not = config.get('sec1', '是否执行远程升级')
 	rounds = config.get('sec2', '用例执行轮次')
+	# phone_num = config.get('sec1', '手机登录的号码')
+	# phone_pwd = config.get('sec1', '手机登录的密码')
 	u = u1.connect(devices_name)
 
 	# video_camera_name = input("input:")
@@ -373,6 +376,7 @@ if __name__ == '__main__':
 		start_time = datetime.now()
 		# u.watcher.stop()
 		for l0 in range(1, len(Caselist) + 1):
+			interval_time1 = datetime.now()
 			a0 = int(Caselist[l0 - 1])
 			#print(a, len(list1))
 			w_report = ''
@@ -382,6 +386,11 @@ if __name__ == '__main__':
 			sleep(1)
 			u.press("home")
 			sleep(1)
+			# #控制随时输出报告
+			# config.read(cfgpath, encoding="gb2312")
+			# do_not_run = config.get('sec1', '是否继续执行自动化')
+			# if do_not_run == '否':
+			# 	break
 			#监视器控制
 			if a0 == 1 or a0 == 2:
 				# 停止所有监视
@@ -415,9 +424,21 @@ if __name__ == '__main__':
 					u.screenshot(image)
 					res = up2qiniu(image, "jwtime1", image)
 					os.remove(image)
+					# app log获取
+					log_path = '/sdcard/Android/data/com.yoosee/files/Log/gw_sdk_ad_1.log'
+					log_file = dt2 + ".log"
+					u.pull(log_path, log_file)
+					log_res = up2qiniu(log_file, "jwtime1", log_file)
+					# print (log_res)
+					os.remove(log_file)
+					try:
+						os.remove(log_path)
+					except:
+						pass
 				except:
-					res = "获取链接失败"
-
+					print ("截图或log获取失败")
+					res = ''
+					log_res = ""
 				#本次不算，重新开始
 				# if l0 == 1:
 				# 	i=i - 1
@@ -437,32 +458,24 @@ if __name__ == '__main__':
 				pos2 = a1.find('\n',pos1+10)
 				pos_1 = a1[pos1-23:pos2]
 				pos3 = re.sub('\n', "", pos_1)
-				#pos2 = re.sub('\n', "", pos_1)
-				#pos3 = re.sub("assert", "", pos2).strip()
-				# if pos3.find("AssertionError") >= 0:
-				# 	pos5 = re.sub("AssertionError",
-				# 				  '执行编号Veri_' + str(j + 1) + '的用例' + app_element_url[j][0] + '进入页面失败:' +
-				# 				  app_element_name['Veri_' + str(j + 1)] + '名字它在进入的页面不存在', pos3)
-				# elif pos3.find("uiautomator2.exceptions.XPathElementNotFoundError") >= 0:
-				# 	pos5 ='编号Veri_'+str(j+1)+app_element_url[j][0] + ',操作元素不存在'
-				# else:
-				# 	pos5 = '执行编号Veri_' + str(j + 1) + '的用例' + app_element_url[j][0] + ',操作元素不存在'
-				# w = 'APP自动化测试' + '\n' + pos5
-				# w = pos3 + '\n' + res
-				# w_report += u0 + pos3 + '\n' + '<br />' + '<a href=' + res + '>查看报错图片</a>' + '<br />'  # '<a href='+res+'>图片</a>'
-				w_report += '<a href=' + res + '>查看报错图片</a>' + '<br />'  # '<a href='+res+'>图片</a>'
+				w_report += '<a href=' + res + '>查看报错图片</a>' + '<br />' + '<a href=' + log_res + '>查看报错日志</a>' + '<br />'# '<a href='+res+'>图片</a>'
 				robot_log_w += dt2 + u0 + pos3 + '\n'
 				case_testexceptioninformation = app_excel_field(u0.replace('JiWei.', ''))
 
 				try:
 					interval_time2 = datetime.now()
-					if interval_time2 - start_time > timedelta(seconds=6*int(l0)):
+					if interval_time2 - interval_time1 > timedelta(seconds=20):
 						# message(w)
-						DingMessage().dingtalk_testexception(case_testexceptioninformation[0],case_testexceptioninformation[2],case_testexceptioninformation[3],case_testexceptioninformation[4],case_testexceptioninformation[5],res,app_version)
+						DingMessage().dingtalk_testexception(case_testexceptioninformation[0],case_testexceptioninformation[2],case_testexceptioninformation[3],case_testexceptioninformation[4],case_testexceptioninformation[5],res,app_version,log_res)
 				except:
 					pass
 				SameOperation().quit_app(u)
 
+				#是否因为锁屏而报错
+				if u.info.get("screenOn") != True:
+					u.screen_off()
+					u.unlock()
+				#重试
 				for retry_n in range(1,3):
 				#重试一次
 					try:
@@ -476,6 +489,8 @@ if __name__ == '__main__':
 						a1 = traceback.format_exc()
 						print(a1)
 						#截图
+						if retry_n == 2:
+							sleep(2)
 						try:
 							dt1 = datetime.now()
 							dt2 = dt1.strftime('%Y-%m-%d_%H.%M.%S')
@@ -483,8 +498,21 @@ if __name__ == '__main__':
 							u.screenshot(image)
 							res = up2qiniu(image, "jwtime1", image)
 							os.remove(image)
+							# app log获取
+							log_path = '/sdcard/Android/data/com.yoosee/files/Log/gw_sdk_ad_1.log'
+							log_file = dt2 + ".log"
+							u.pull(log_path, log_file)
+							log_res = up2qiniu(log_file, "jwtime1", log_file)
+							# print (log_res)
+							os.remove(log_file)
+							try:
+								os.remove(log_path)
+							except:
+								pass
 						except:
-							res = "获取链接失败"
+							print ("截图或log获取失败")
+							res = ''
+							log_res = ''
 						# if a1.find("AssertionError") >= 0:
 						# 	pos1 = a1.find('AssertionError')
 						# 	# print (pos1)
@@ -496,17 +524,18 @@ if __name__ == '__main__':
 						pos3 = re.sub('\n', "", pos_1)
 						# w = u0+"重新执行"+str(retry_n)+"次仍报错"+pos3+'\n'+ res
 						# w_report += u0+"重新执行"+str(retry_n)+"次仍报错"+pos3+'\n' +'<br />'+ '<a href='+res+'>查看报错图片</a>' +'<br />' #'<a href='+res+'>图片</a>'
-						w_report += '<a href='+res+'>查看重新测试第'+str(retry_n)+'次报错图片</a>' +'<br />' #'<a href='+res+'>图片</a>'
+						w_report += '<a href='+res+'>查看重新测试第'+str(retry_n)+'次报错图片</a>' +'<br />' +'<a href='+log_res+'>查看重新测试第'+str(retry_n)+'次报错日志</a>' +'<br />'#'<a href='+res+'>图片</a>'
 						robot_log_w += dt2+u0+"重新执行"+str(retry_n)+"次仍报错"+pos3+'\n'
 						# fail_caselog.append(w_report)
 						# case_number.append(u0)
 						try:
-							# message(w)
-							DingMessage().dingtalk_testexception(case_testexceptioninformation[0]+"重执行"+str(retry_n)+"次仍",
-																 case_testexceptioninformation[2],
-																 case_testexceptioninformation[3],
-																 case_testexceptioninformation[4],
-																 case_testexceptioninformation[5], res,app_version)
+							interval_time3 = datetime.now()
+							if interval_time3 - interval_time2 > timedelta(seconds=20):
+								DingMessage().dingtalk_testexception(case_testexceptioninformation[0]+"重执行"+str(retry_n)+"次仍",
+																	 case_testexceptioninformation[2],
+																	 case_testexceptioninformation[3],
+																	 case_testexceptioninformation[4],
+																	 case_testexceptioninformation[5], res,app_version,log_res)
 						except:
 							pass
 
@@ -514,8 +543,6 @@ if __name__ == '__main__':
 						fail_caselog.append(w_report)
 						case_number.append(u0)
 						robot_loglist.append(robot_log_w)
-					# if a0 > 7:
-					# 	break
 					SameOperation().quit_app(u)
 				if u.uiautomator.running() == False:
 					u.uiautomator.start()
@@ -586,7 +613,7 @@ if __name__ == '__main__':
 		# if i == 20:
 			DingMessage().dingtalk_robot(str(case_len),str(count_success),str(count_case_fail),report_url)
 	# u.app_uninstall('com.yoosee')
-		if count_case_fail >=10:
+		if count_case_fail >=30:
 			sleep(8000)
 			break
 
