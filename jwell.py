@@ -298,6 +298,97 @@ class AutoUpgrade:
                 f.write(chunk)
         f.close()
 
+class AppLog:
+	def __init__(self):
+		self.a = '/sdcard/Android/data/com.yoosee/files/Log/'
+		self.b = '/sdcard/Android/data/com.yoosee/files/Documents/'
+		self.c = '/sdcard/Android/data/com.yoosee/files/Documents/errorLog/'
+
+	def log_sum(self,file):
+		try:
+			list_a = os.listdir(self.a)
+			for i in range(0,len(list_a)):
+				if '.log' in list_a[i]:
+					# print (list_a[i])
+					# 打开文件
+					log_a = self.a+list_a[i]
+					fo_a = open(log_a, "r", encoding="utf-8")
+			# print("文件名为: ", fo.name)
+					line_a = fo_a.read()
+
+					# file = "1.log"
+					with open(file, 'a') as f:
+						f.write(line_a)
+					fo_a.close()
+					os.remove(log_a)
+				# Documents文件下的
+				list_b = os.listdir(self.b)
+				for i in range(0, len(list_b)):
+					if '.log' in list_b[i]:
+						# print(list_b[i])
+						# 打开文件
+						log_b = self.b + list_b[i]
+						fo_b = open(log_b, "r", encoding="utf-8")
+						# print("文件名为: ", fo.name)
+						line_b = fo_b.read()
+
+						# file = "1.log"
+						with open(file, 'a') as f:
+							f.write(line_b)
+						fo_b.close()
+						os.remove(log_b)
+
+				list_c = os.listdir(self.c)
+				for i in range(0, len(list_c)):
+					if '.log' in list_c[i]:
+						# print(list_c[i])
+						# 打开文件
+						log_c = self.c + list_c[i]
+						fo_c = open(log_c, "r", encoding="utf-8")
+						# print("文件名为: ", fo.name)
+						line_c = fo_c.read()
+
+						# file = "1.log"
+						with open(file, 'a') as f:
+							f.write(line_c)
+						fo_c.close()
+						os.remove(log_c)
+		except:
+			pass
+
+class SanAppLog:
+	def __init__(self):
+		self.a_1 = '/sdcard/Android/data/com.yoosee/files/Log/'
+		self.a_2 = '/sdcard/Android/data/com.yoosee/files/Documents/'
+		self.a_3 = '/sdcard/Android/data/com.yoosee/files/Documents/errorLog/'
+		self.b_1 = '/sdcard/Android/data/com.yoosee/files/Log/.'
+		self.b_2 = '/sdcard/Android/data/com.yoosee/files/Documents/.'
+		self.b_3 = '/sdcard/Android/data/com.yoosee/files/Documents/errorLog/.'
+
+	def sanxing_log(self, u, file):
+		for i in range(1, 4):
+			log_name = 'name_list.txt'
+			list_1 = 'self.b_' + str(i)
+			u.pull(eval(list_1), log_name)
+
+			with open(log_name, 'r') as f:
+				a = f.read()
+			# print(a)
+
+			b = re.findall('<a href="(.*)">', a)
+			# print(b)  # [('life is short, i use python', 'i love it')]
+			list = []
+			for j in range(0, len(b)):
+				if '.log' in b[j]:
+					# list.append(b[i])
+					# print (list)
+					list_2 = 'self.a_' + str(i)
+					u.pull(eval(list_2) + b[j], str(j) + '.log')
+					with open(str(j) + '.log', 'r') as f:
+						a_1 = f.read()
+					with open(file, 'a') as f:
+						f.write(a_1)
+
 if __name__ == '__main__':
 	#配置文件读取参数
 	cfgpath = "dbconf.ini"
@@ -308,8 +399,8 @@ if __name__ == '__main__':
 	devices_name = config.get('sec1', '手机设备名')
 	execute_or_not = config.get('sec1', '是否执行远程升级')
 	rounds = config.get('sec2', '用例执行轮次')
-	# phone_num = config.get('sec1', '手机登录的号码')
-	# phone_pwd = config.get('sec1', '手机登录的密码')
+	phone_num = config.get('sec1', '手机登录的号码')
+	phone_pwd = config.get('sec1', '手机登录的密码')
 	u = u1.connect(devices_name)
 
 	# video_camera_name = input("input:")
@@ -424,19 +515,24 @@ if __name__ == '__main__':
 					u.screenshot(image)
 					res = up2qiniu(image, "jwtime1", image)
 					os.remove(image)
+				except:
+					print ("截图获取失败")
 					# app log获取
-					log_path = '/sdcard/Android/data/com.yoosee/files/Log/gw_sdk_ad_1.log'
+					# log_path = '/sdcard/Android/data/com.yoosee/files/Log/gw_sdk_ad_1.log'
+				try:
 					log_file = dt2 + ".log"
-					u.pull(log_path, log_file)
+					# u.pull(log_path, log_file)
+					# AppLog().log_sum(log_file)
+					SanAppLog().sanxing_log(u, log_file)
 					log_res = up2qiniu(log_file, "jwtime1", log_file)
 					# print (log_res)
-					os.remove(log_file)
 					try:
+						os.remove(log_file)
 						os.remove(log_path)
 					except:
 						pass
 				except:
-					print ("截图或log获取失败")
+					print ("log获取失败")
 					res = ''
 					log_res = ""
 				#本次不算，重新开始
@@ -481,7 +577,7 @@ if __name__ == '__main__':
 					try:
 						eval(u0)(u,video_camera_name)
 						# message(u0+"重新执行"+str(retry_n)+"次OK")
-						DingMessage().dingtalk_testexception(case_testexceptioninformation[0]+"重新执行"+str(retry_n)+"次",case_testexceptioninformation[2],case_testexceptioninformation[3],case_testexceptioninformation[4],case_testexceptioninformation[5],res,app_version)
+						DingMessage().dingtalk_testexception(case_testexceptioninformation[0]+"重新执行"+str(retry_n)+"次",case_testexceptioninformation[2],case_testexceptioninformation[3],case_testexceptioninformation[4],case_testexceptioninformation[5],res,app_version,log_res)
 
 						count_success = count_success + 1
 						break
@@ -498,20 +594,25 @@ if __name__ == '__main__':
 							u.screenshot(image)
 							res = up2qiniu(image, "jwtime1", image)
 							os.remove(image)
+						except:
+							res = ''
+							print("截图获取失败")
 							# app log获取
-							log_path = '/sdcard/Android/data/com.yoosee/files/Log/gw_sdk_ad_1.log'
+							# log_path = '/sdcard/Android/data/com.yoosee/files/Log/gw_sdk_ad_1.log'
+						try:
 							log_file = dt2 + ".log"
-							u.pull(log_path, log_file)
+							# u.pull(log_path, log_file)
+							# AppLog().log_sum(log_file)
+							SanAppLog().sanxing_log(u,log_file)
 							log_res = up2qiniu(log_file, "jwtime1", log_file)
 							# print (log_res)
-							os.remove(log_file)
 							try:
+								os.remove(log_file)
 								os.remove(log_path)
 							except:
 								pass
 						except:
-							print ("截图或log获取失败")
-							res = ''
+							print ("log获取失败")
 							log_res = ''
 						# if a1.find("AssertionError") >= 0:
 						# 	pos1 = a1.find('AssertionError')

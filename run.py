@@ -11,10 +11,10 @@ def doTask(case):
         doTask(case)
 
 
-def main(rounds):
+def main():
     case = 'jwell.py'
     i = 0
-    while i<int(rounds):
+    while i<1:
         try:
             doTask(case)
         except Exception as e:
@@ -26,8 +26,8 @@ def main(rounds):
 if __name__=='__main__':
 	# device_id = 'c6b4b563'
     #配置文件读取参数
-    cfgpath = "dbconf.ini"
-    config = configparser.ConfigParser()
-    config.read(cfgpath, encoding="gb2312")
-    rounds = config.get('sec2', '用例执行轮次')
-    main(rounds)
+    # cfgpath = "dbconf.ini"
+    # config = configparser.ConfigParser()
+    # config.read(cfgpath, encoding="gb2312")
+    # rounds = config.get('sec2', '用例执行轮次')
+    main()

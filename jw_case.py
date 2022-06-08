@@ -8,9 +8,14 @@ import math
 import operator
 from functools import reduce
 import threading
+import configparser
 
 
-
+cfgpath = "dbconf.ini"
+config = configparser.ConfigParser()
+config.read(cfgpath, encoding="gb2312")
+phone_num = config.get('sec1', '手机登录的号码')
+phone_pwd = config.get('sec1', '手机登录的密码')
 class SameOperation:
     def log_out(self,u):
         if not u(text='登录').exists:
@@ -87,7 +92,9 @@ class SameOperation:
             # except:
             #     pass
             u.swipe_ext("down", scale=0.8)
-            sleep(2)
+            sleep(3)
+            if u(text='加载中').exists:
+                sleep(3)
             if u(text=video_camera_name).exists:
                 u(text=video_camera_name).click(timeout=5)
                 sleep(6)
@@ -316,12 +323,12 @@ class JiWei:
         # u.watcher.start()
         SameOperation().app_go(u)
         if u(text='登录').exists:
-            SameOperation().log_in(u, "17722618662", "@tang123")
+            SameOperation().log_in(u, phone_num, phone_pwd)
             sleep(5)
             u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
         else:
             SameOperation().log_out(u)
-            SameOperation().log_in(u, "17722618662", "@tang123")
+            SameOperation().log_in(u, phone_num, phone_pwd)
             sleep(5)
             u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
         sleep(3)
@@ -450,7 +457,7 @@ class JiWei:
         SameOperation().quit_app(u)
 
     @classmethod
-    def jwt_18(cls, u, video_camera_name):  #云存储设置入口
+    def jwt_18(cls, u, video_camera_name):  #云存储设置入口云存储状态
         SameOperation().app_go(u)
         set_name = '增值服务'
         if u(text="有线连接自动化测试", resourceId="com.yoosee:id/tv_name").exists or u(text=video_camera_name,resourceId="com.yoosee:id/tv_name").exists:
@@ -500,7 +507,7 @@ class JiWei:
     def jwt_21(cls, u, video_camera_name):  #国内topon开屏广告-展示
         u.app_clear('com.yoosee')  # 清除应用数据
         SameOperation().app_go(u)
-        SameOperation().log_in(u, "17722618662", "@tang123")
+        SameOperation().log_in(u,  phone_num, phone_pwd)
         sleep(5)
         u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
         u(text="推送消息提醒").wait(timeout=10)
@@ -519,7 +526,7 @@ class JiWei:
         u.app_clear('com.yoosee')  # 清除应用数据
         # u.watcher.stop()
         SameOperation().app_go(u)
-        SameOperation().log_in(u, "17722618662", "@tang123")
+        SameOperation().log_in(u,  phone_num, phone_pwd)
         sleep(5)
         u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
         u(text="推送消息提醒").wait(timeout=10)
@@ -538,7 +545,7 @@ class JiWei:
         u.app_clear('com.yoosee')  # 清除应用数据
         # u.watcher.stop()
         SameOperation().app_go(u)
-        SameOperation().log_in(u, "17722618662", "@tang123")
+        SameOperation().log_in(u,  phone_num, phone_pwd)
         sleep(5)
         u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
         u(text="推送消息提醒").wait(timeout=10)
@@ -557,7 +564,7 @@ class JiWei:
         u.app_clear('com.yoosee')  # 清除应用数据
         # u.watcher.stop()
         SameOperation().app_go(u)
-        SameOperation().log_in(u, "17722618662", "@tang123")
+        SameOperation().log_in(u, phone_num, phone_pwd)
         sleep(5)
         u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
         u(text="推送消息提醒").wait(timeout=10)
@@ -580,7 +587,7 @@ class JiWei:
         u.app_clear('com.yoosee')  # 清除应用数据
         # u.watcher.stop()
         SameOperation().app_go(u)
-        SameOperation().log_in(u, "17722618662", "@tang123")
+        SameOperation().log_in(u, phone_num, phone_pwd)
         sleep(5)
         u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
         u(text="推送消息提醒").wait(timeout=10)
@@ -673,7 +680,7 @@ class JiWei:
         except:
             u.app_install('1.apk')
             SameOperation().app_go(u)
-            SameOperation().log_in(u, "17722618662", "@tang123")
+            SameOperation().log_in(u, phone_num, phone_pwd)
             sleep(5)
             u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
             u(text="推送消息提醒").wait(timeout=10)
@@ -704,7 +711,7 @@ class JiWei:
         except:
             u.app_install('1.apk')
             SameOperation().app_go(u)
-            SameOperation().log_in(u, "17722618662", "@tang123")
+            SameOperation().log_in(u, phone_num, phone_pwd)
             sleep(5)
             u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
             u(text="推送消息提醒").wait(timeout=10)
@@ -732,7 +739,7 @@ class JiWei:
         except:
             u.app_install('1.apk')
             SameOperation().app_go(u)
-            SameOperation().log_in(u, "17722618662", "@tang123")
+            SameOperation().log_in(u, phone_num, phone_pwd)
             sleep(5)
             u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
             u(text="推送消息提醒").wait(timeout=10)
@@ -766,7 +773,7 @@ class JiWei:
         except:
             u.app_install('1.apk')
             SameOperation().app_go(u)
-            SameOperation().log_in(u, "17722618662", "@tang123")
+            SameOperation().log_in(u, phone_num, phone_pwd)
             sleep(5)
             u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
             u(text="推送消息提醒").wait(timeout=10)
@@ -1088,4 +1095,17 @@ class JiWei:
             sleep(3)
             banner_times = banner_times + 1
         assert u.xpath('//*[@resource-id="com.yoosee:id/lv_contact"]/android.widget.LinearLayout[1]').wait(timeout=8), '没有banner广告'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_48(cls, u, video_camera_name):  #设置云存入口
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        SameOperation().find_deldevices(u, '我的云存储')
+        u(text='我的云存储').click(timeout=5)
+        assert u(text="云服务").wait(timeout=10), '没有跳转到增值业务H5页面，页面标题未出现'
         SameOperation().quit_app(u)
