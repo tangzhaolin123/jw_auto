@@ -440,6 +440,7 @@ if __name__ == '__main__':
 	u.watcher.when("消息通知说明").press("back")
 	# u.watcher.start()
 	u.implicitly_wait(10.0)
+	devices_brand = u.shell("getprop ro.product.brand").output
 	i = 0
 	while i<int(rounds):
 		old_appid = config.get('sec1', 'APP的id')
@@ -522,8 +523,10 @@ if __name__ == '__main__':
 				try:
 					log_file = dt2 + ".log"
 					# u.pull(log_path, log_file)
-					# AppLog().log_sum(log_file)
-					SanAppLog().sanxing_log(u, log_file)
+					if devices_brand == 'VIVO' or devices_brand == 'OPPO':
+						AppLog().log_sum(log_file)
+					else:
+						SanAppLog().sanxing_log(u, log_file)
 					log_res = up2qiniu(log_file, "jwtime1", log_file)
 					# print (log_res)
 					try:
@@ -533,7 +536,6 @@ if __name__ == '__main__':
 						pass
 				except:
 					print ("log获取失败")
-					res = ''
 					log_res = ""
 				#本次不算，重新开始
 				# if l0 == 1:
@@ -602,8 +604,10 @@ if __name__ == '__main__':
 						try:
 							log_file = dt2 + ".log"
 							# u.pull(log_path, log_file)
-							# AppLog().log_sum(log_file)
-							SanAppLog().sanxing_log(u,log_file)
+							if devices_brand == 'VIVO' or devices_brand == 'OPPO':
+								AppLog().log_sum(log_file)
+							else:
+								SanAppLog().sanxing_log(u,log_file)
 							log_res = up2qiniu(log_file, "jwtime1", log_file)
 							# print (log_res)
 							try:
@@ -710,11 +714,14 @@ if __name__ == '__main__':
 		report_url = '('+up2qiniu(report_file, "jwtime1", report_file)+')'
 		os.remove(report_file)
 
-		if i == 1 or i == 2 or i == 3 or i%30 == 0:#前三次报告发出来，后面每20次发一次报告
+		#if i == 1 or i == 2 or i == 3 or i%30 == 0:#前三次报告发出来，后面每20次发一次报告
 		# if i == 20:
-			DingMessage().dingtalk_robot(str(case_len),str(count_success),str(count_case_fail),report_url)
+		DingMessage().dingtalk_robot(str(case_len),str(count_success),str(count_case_fail),report_url)
 	# u.app_uninstall('com.yoosee')
-		if count_case_fail >=30:
+		if count_case_fail >=20:
+			u.screen_off()
+			u.unlock()
+		elif count_case_fail >=40:
 			sleep(8000)
 			break
 

@@ -846,9 +846,10 @@ class JiWei:
         u(resourceId="com.yoosee:id/tv_playback").click(timeout=8)
         u(resourceId="com.yoosee:id/tv_sdcard_playback").click(timeout=5)
         u(resourceId='com.yoosee:id/fl_videoplayer_parent').wait(timeout=5)
-        timeline_icon_coordinates = u(resourceId='com.yoosee:id/fl_videoplayer_parent').center()
-        u.drag(timeline_icon_coordinates[0] - 100, timeline_icon_coordinates[1], timeline_icon_coordinates[0],
-               timeline_icon_coordinates[1], 0.2)
+        # timeline_icon_coordinates = u(resourceId='com.yoosee:id/fl_videoplayer_parent').center()
+        # u.drag(timeline_icon_coordinates[0] - 100, timeline_icon_coordinates[1], timeline_icon_coordinates[0],
+        #        timeline_icon_coordinates[1], 0.2)
+        u(resourceId="com.yoosee:id/fl_videoplayer_parent").swipe("right", steps=10)
         sleep(5)
         u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
         sleep(1)
@@ -858,8 +859,9 @@ class JiWei:
         sleep(3)
         play_status = u(resourceId="com.yoosee:id/iv_playback_fast").info
         assert play_status['enabled'] == True, '时间轴向前快速滑动没有自动播放'
-        u.drag(timeline_icon_coordinates[0] + 100, timeline_icon_coordinates[1], timeline_icon_coordinates[0],
-               timeline_icon_coordinates[1], 0.2)
+        # u.drag(timeline_icon_coordinates[0] + 100, timeline_icon_coordinates[1], timeline_icon_coordinates[0],
+        #        timeline_icon_coordinates[1], 0.2)
+        u(resourceId="com.yoosee:id/fl_videoplayer_parent").swipe("left", steps=10)
         sleep(5)
         if not u(resourceId="com.yoosee:id/iv_playback_fast").exists:
             u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
@@ -878,6 +880,7 @@ class JiWei:
             SameOperation().add_wired(u, video_camera_name)
             u.press('back')
         u.swipe_ext("down", scale=0.8)
+        u(resourceId="com.yoosee:id/tv_playback").wait(timeout=5)
         u(resourceId="com.yoosee:id/tv_playback").click(timeout=8)
         u(resourceId="com.yoosee:id/tv_cloud_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/rl_functin_bar").wait(timeout=8)
@@ -893,6 +896,7 @@ class JiWei:
             SameOperation().add_wired(u, video_camera_name)
             u.press('back')
         u.swipe_ext("down", scale=0.8)
+        u(resourceId="com.yoosee:id/tv_playback").wait(timeout=5)
         u(resourceId="com.yoosee:id/tv_playback").click(timeout=8)
         u(resourceId="com.yoosee:id/tv_cloud_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/rl_functin_bar").wait(timeout=8)
@@ -938,6 +942,7 @@ class JiWei:
             SameOperation().add_wired(u, video_camera_name)
             u.press('back')
         u.swipe_ext("down", scale=0.8)
+        sleep(3)
         u(resourceId="com.yoosee:id/tv_playback").click(timeout=8)
         u(resourceId="com.yoosee:id/tv_cloud_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/rl_functin_bar").wait(timeout=8)
@@ -958,6 +963,7 @@ class JiWei:
             SameOperation().add_wired(u, video_camera_name)
             u.press('back')
         u.swipe_ext("down", scale=0.8)
+        u(resourceId="com.yoosee:id/tv_playback").wait(timeout=5)
         u(resourceId="com.yoosee:id/tv_playback").click(timeout=8)
         u(resourceId="com.yoosee:id/tv_cloud_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/rl_functin_bar").wait(timeout=8)
@@ -992,6 +998,7 @@ class JiWei:
             SameOperation().add_wired(u, video_camera_name)
             u.press('back')
         u.swipe_ext("down", scale=0.8)
+        u(resourceId="com.yoosee:id/tv_playback").wait(timeout=5)
         u(resourceId="com.yoosee:id/tv_playback").click(timeout=8)
         u(resourceId="com.yoosee:id/tv_cloud_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/rl_functin_bar").wait(timeout=8)
@@ -1017,6 +1024,7 @@ class JiWei:
             SameOperation().add_wired(u, video_camera_name)
             u.press('back')
         u.swipe_ext("down", scale=0.8)
+        sleep(3)
         u(resourceId="com.yoosee:id/tv_playback").click(timeout=8)
         u(resourceId="com.yoosee:id/tv_cloud_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/rl_functin_bar").wait(timeout=8)
@@ -1108,4 +1116,46 @@ class JiWei:
         SameOperation().find_deldevices(u, '我的云存储')
         u(text='我的云存储').click(timeout=5)
         assert u(text="云服务").wait(timeout=10), '没有跳转到增值业务H5页面，页面标题未出现'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_49(cls, u, video_camera_name):  #设置基础全天/报警录像互切
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        SameOperation().find_deldevices(u, '录像设置')
+        u(text='录像设置').click(timeout=5)
+        u(text='报警录像').click(timeout=5)
+        assert u(resourceId='com.yoosee:id/pt_alarm_record_time').wait(timeout=5), '切换报警录像失败'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_50(cls, u, video_camera_name):  #设置基础全天/报警录像互切
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        SameOperation().find_deldevices(u, '录像设置')
+        u(text='录像设置').click(timeout=5)
+        u(text='定时录像').click(timeout=5)
+        assert u(resourceId='com.yoosee:id/pt_timed_record_time').wait(timeout=5), '切换定时录像失败'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_51(cls, u, video_camera_name):  #设置基础全天/报警录像互切
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        SameOperation().find_deldevices(u, '录像设置')
+        u(text='录像设置').click(timeout=5)
+        u(text='全天录像').click(timeout=5)
+        assert u(resourceId='com.yoosee:id/sv_record_switch').wait(timeout=5), '切换全天录像失败'
         SameOperation().quit_app(u)
