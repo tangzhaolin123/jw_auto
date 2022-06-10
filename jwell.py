@@ -439,9 +439,11 @@ if __name__ == '__main__':
 	u.watcher.when("我知道了").click()
 	u.watcher.when("消息通知说明").press("back")
 	# u.watcher.start()
-	u.implicitly_wait(10.0)
-	devices_brand = u.shell("getprop ro.product.brand").output
+	# u.implicitly_wait(10.0)
+	u.settings['wait_timeout'] = 10.0
+	devices_brand = u.shell("getprop ro.product.brand").output.strip()
 	i = 0
+	is_execute = []
 	while i<int(rounds):
 		old_appid = config.get('sec1', 'APP的id')
 		new_appid = AutoUpgrade().app_id()
@@ -470,6 +472,7 @@ if __name__ == '__main__':
 		for l0 in range(1, len(Caselist) + 1):
 			interval_time1 = datetime.now()
 			a0 = int(Caselist[l0 - 1])
+			is_execute.append(Caselist[l0 - 1])
 			#print(a, len(list1))
 			w_report = ''
 			robot_log_w = ''
@@ -478,11 +481,6 @@ if __name__ == '__main__':
 			sleep(1)
 			u.press("home")
 			sleep(1)
-			# #控制随时输出报告
-			# config.read(cfgpath, encoding="gb2312")
-			# do_not_run = config.get('sec1', '是否继续执行自动化')
-			# if do_not_run == '否':
-			# 	break
 			#监视器控制
 			if a0 == 1 or a0 == 2:
 				# 停止所有监视
@@ -517,13 +515,14 @@ if __name__ == '__main__':
 					res = up2qiniu(image, "jwtime1", image)
 					os.remove(image)
 				except:
+					res = ''
 					print ("截图获取失败")
 					# app log获取
 					# log_path = '/sdcard/Android/data/com.yoosee/files/Log/gw_sdk_ad_1.log'
 				try:
 					log_file = dt2 + ".log"
 					# u.pull(log_path, log_file)
-					if devices_brand == 'VIVO' or devices_brand == 'OPPO':
+					if devices_brand == 'vivo' or devices_brand == 'OPPO':
 						AppLog().log_sum(log_file)
 					else:
 						SanAppLog().sanxing_log(u, log_file)
@@ -531,7 +530,6 @@ if __name__ == '__main__':
 					# print (log_res)
 					try:
 						os.remove(log_file)
-						os.remove(log_path)
 					except:
 						pass
 				except:
@@ -604,7 +602,7 @@ if __name__ == '__main__':
 						try:
 							log_file = dt2 + ".log"
 							# u.pull(log_path, log_file)
-							if devices_brand == 'VIVO' or devices_brand == 'OPPO':
+							if devices_brand == 'vivo' or devices_brand == 'OPPO':
 								AppLog().log_sum(log_file)
 							else:
 								SanAppLog().sanxing_log(u,log_file)
@@ -612,7 +610,6 @@ if __name__ == '__main__':
 							# print (log_res)
 							try:
 								os.remove(log_file)
-								os.remove(log_path)
 							except:
 								pass
 						except:
@@ -653,7 +650,17 @@ if __name__ == '__main__':
 					u.uiautomator.start()
 			#关闭监控
 			u.watcher.stop()
-		count_case_fail = case_len - count_success
+			# 控制随时输出报告
+			config.read(cfgpath, encoding="gb2312")
+			do_not_run = config.get('sec1', '是否继续执行自动化')
+			if do_not_run == '否':
+				break
+		# count_case_fail = case_len - count_success
+		if do_not_run == '否':
+			count_case_fail = len(is_execute) - count_success
+			case_len = len(is_execute)
+		else:
+			count_case_fail = case_len - count_success
 		#报告详情
 		report_time = datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
 		report_file = report_time + ".html"
@@ -662,12 +669,16 @@ if __name__ == '__main__':
 		#机器人日志
 		dt3 = datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
 		robot_log_file = dt3 + ".txt"
+		for execute_i in range(0,len(is_execute)):
+			with open(robot_log_file, 'a') as f:
+				f.write(is_execute[execute_i]+'、  ')
 
-		robot_log = open(robot_log_file, 'a')
+		# robot_log = open(robot_log_file, 'a')
 		for robot_i in range(0, len(robot_loglist)):
-			robot_log.write('\n' + robot_loglist[robot_i] + '\n')
+			with open(robot_log_file, 'a') as f:
+				f.write('\n' + robot_loglist[robot_i] + '\n')
 		# robot_log.flush()
-		robot_log.close()
+		# robot_log.close()
 		robot_log_singleurl =up2qiniu(robot_log_file, "jwtime1", robot_log_file)
 		os.remove(robot_log_file)
 		robot_log_url = '<a href='+robot_log_singleurl+'>查看机器人日志</a>'
@@ -718,6 +729,8 @@ if __name__ == '__main__':
 		# if i == 20:
 		DingMessage().dingtalk_robot(str(case_len),str(count_success),str(count_case_fail),report_url)
 	# u.app_uninstall('com.yoosee')
+		if do_not_run == '否':
+			break
 		if count_case_fail >=20:
 			u.screen_off()
 			u.unlock()

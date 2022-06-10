@@ -842,14 +842,15 @@ class JiWei:
         else:
             SameOperation().add_wired(u, video_camera_name)
             u.press('back')
-        u.swipe_ext("down", scale=0.8)
+        if u(resourceId="com.yoosee:id/tv_playback").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
         u(resourceId="com.yoosee:id/tv_playback").click(timeout=8)
         u(resourceId="com.yoosee:id/tv_sdcard_playback").click(timeout=5)
         u(resourceId='com.yoosee:id/fl_videoplayer_parent').wait(timeout=5)
-        # timeline_icon_coordinates = u(resourceId='com.yoosee:id/fl_videoplayer_parent').center()
-        # u.drag(timeline_icon_coordinates[0] - 100, timeline_icon_coordinates[1], timeline_icon_coordinates[0],
-        #        timeline_icon_coordinates[1], 0.2)
-        u(resourceId="com.yoosee:id/fl_videoplayer_parent").swipe("right", steps=10)
+        timeline_icon_coordinates = u(resourceId='com.yoosee:id/fl_videoplayer_parent').center()
+        u.drag(timeline_icon_coordinates[0] - 100, timeline_icon_coordinates[1], timeline_icon_coordinates[0],
+               timeline_icon_coordinates[1], 0.2)
+        # u(resourceId="com.yoosee:id/fl_videoplayer_parent").swipe("right", steps=10)
         sleep(5)
         u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
         sleep(1)
@@ -859,9 +860,9 @@ class JiWei:
         sleep(3)
         play_status = u(resourceId="com.yoosee:id/iv_playback_fast").info
         assert play_status['enabled'] == True, '时间轴向前快速滑动没有自动播放'
-        # u.drag(timeline_icon_coordinates[0] + 100, timeline_icon_coordinates[1], timeline_icon_coordinates[0],
-        #        timeline_icon_coordinates[1], 0.2)
-        u(resourceId="com.yoosee:id/fl_videoplayer_parent").swipe("left", steps=10)
+        u.drag(timeline_icon_coordinates[0] + 100, timeline_icon_coordinates[1], timeline_icon_coordinates[0],
+               timeline_icon_coordinates[1], 0.2)
+        # u(resourceId="com.yoosee:id/fl_videoplayer_parent").swipe("left", steps=10)
         sleep(5)
         if not u(resourceId="com.yoosee:id/iv_playback_fast").exists:
             u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
@@ -879,7 +880,8 @@ class JiWei:
         else:
             SameOperation().add_wired(u, video_camera_name)
             u.press('back')
-        u.swipe_ext("down", scale=0.8)
+        if u(resourceId="com.yoosee:id/tv_playback").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
         u(resourceId="com.yoosee:id/tv_playback").wait(timeout=5)
         u(resourceId="com.yoosee:id/tv_playback").click(timeout=8)
         u(resourceId="com.yoosee:id/tv_cloud_playback").click(timeout=5)
@@ -895,13 +897,14 @@ class JiWei:
         else:
             SameOperation().add_wired(u, video_camera_name)
             u.press('back')
-        u.swipe_ext("down", scale=0.8)
+        if u(resourceId="com.yoosee:id/tv_playback").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
         u(resourceId="com.yoosee:id/tv_playback").wait(timeout=5)
         u(resourceId="com.yoosee:id/tv_playback").click(timeout=8)
         u(resourceId="com.yoosee:id/tv_cloud_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/rl_functin_bar").wait(timeout=8)
         sleep(10)
-        if not u(resourceId="com.yoosee:id/rl_functin_bar").exists:
+        if u(resourceId="com.yoosee:id/rl_functin_bar").wait_gone(timeout=3.0):
             u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
         # u(resourceId="com.yoosee:id/play_iv").click(timeout=5)
         stop_status = SameOperation().icon_statuscheck(u,"com.yoosee:id/play_iv")
@@ -920,12 +923,13 @@ class JiWei:
         else:
             SameOperation().add_wired(u, video_camera_name)
             u.press('back')
-        u.swipe_ext("down", scale=0.8)
+        if u(resourceId="com.yoosee:id/tv_playback").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
         u(resourceId="com.yoosee:id/tv_playback").click(timeout=8)
         u(resourceId="com.yoosee:id/tv_cloud_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/rl_functin_bar").wait(timeout=8)
         sleep(10)
-        if not u(resourceId="com.yoosee:id/rl_functin_bar").exists:
+        if u(resourceId="com.yoosee:id/rl_functin_bar").wait_gone(timeout=3.0):
             u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
         u(resourceId="com.yoosee:id/play_iv").click(timeout=5)
         sleep(1)
@@ -941,13 +945,13 @@ class JiWei:
         else:
             SameOperation().add_wired(u, video_camera_name)
             u.press('back')
-        u.swipe_ext("down", scale=0.8)
-        sleep(3)
+        if u(resourceId="com.yoosee:id/tv_playback").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
         u(resourceId="com.yoosee:id/tv_playback").click(timeout=8)
         u(resourceId="com.yoosee:id/tv_cloud_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/rl_functin_bar").wait(timeout=8)
         sleep(10)
-        if not u(resourceId="com.yoosee:id/rl_functin_bar").exists:
+        if u(resourceId="com.yoosee:id/rl_functin_bar").wait_gone(timeout=3.0):
             u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
         u(resourceId="com.yoosee:id/play_iv").click(timeout=5)
         u(resourceId="com.yoosee:id/iv_palyback_screenshot_btn").click(timeout=5)
@@ -962,8 +966,10 @@ class JiWei:
         else:
             SameOperation().add_wired(u, video_camera_name)
             u.press('back')
-        u.swipe_ext("down", scale=0.8)
-        u(resourceId="com.yoosee:id/tv_playback").wait(timeout=5)
+        if u(resourceId="com.yoosee:id/tv_playback").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        # u(resourceId="com.yoosee:id/tv_playback").wait(timeout=5)
+        # sleep(1)
         u(resourceId="com.yoosee:id/tv_playback").click(timeout=8)
         u(resourceId="com.yoosee:id/tv_cloud_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/rl_functin_bar").wait(timeout=8)
@@ -977,7 +983,7 @@ class JiWei:
             u(resourceId="com.yoosee:id/tv_yes").click(timeout=5)
         u(resourceId="com.yoosee:id/back_btn").click(timeout=5)
         sleep(10)
-        if not u(resourceId="com.yoosee:id/rl_functin_bar").exists:
+        if u(resourceId="com.yoosee:id/rl_functin_bar").wait_gone(timeout=3.0):
             u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
         u(resourceId="com.yoosee:id/play_iv").click(timeout=5)
         u(resourceId="com.yoosee:id/iv_playback_to_dwonload").click(timeout=5)
@@ -997,16 +1003,18 @@ class JiWei:
         else:
             SameOperation().add_wired(u, video_camera_name)
             u.press('back')
-        u.swipe_ext("down", scale=0.8)
-        u(resourceId="com.yoosee:id/tv_playback").wait(timeout=5)
+        if u(resourceId="com.yoosee:id/tv_playback").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        # u(resourceId="com.yoosee:id/tv_playback").wait(timeout=5)
         u(resourceId="com.yoosee:id/tv_playback").click(timeout=8)
+        sleep(1)
         u(resourceId="com.yoosee:id/tv_cloud_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/rl_functin_bar").wait(timeout=8)
         sleep(10)
         u(resourceId='com.yoosee:id/date_tv')[2].click(timeout=5)
         sleep(10)
         if not u(text="暂无录像").exists:
-            if not u(resourceId="com.yoosee:id/rl_functin_bar").exists:
+            if u(resourceId="com.yoosee:id/rl_functin_bar").wait_gone(timeout=3.0):
                 u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
             # u(resourceId="com.yoosee:id/play_iv").click(timeout=5)
             sleep(1)
@@ -1023,8 +1031,8 @@ class JiWei:
         else:
             SameOperation().add_wired(u, video_camera_name)
             u.press('back')
-        u.swipe_ext("down", scale=0.8)
-        sleep(3)
+        if u(resourceId="com.yoosee:id/tv_playback").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
         u(resourceId="com.yoosee:id/tv_playback").click(timeout=8)
         u(resourceId="com.yoosee:id/tv_cloud_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/rl_functin_bar").wait(timeout=8)
@@ -1043,12 +1051,13 @@ class JiWei:
         else:
             SameOperation().add_wired(u, video_camera_name)
             u.press('back')
-        u.swipe_ext("down", scale=0.8)
+        if u(resourceId="com.yoosee:id/tv_playback").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
         u(resourceId="com.yoosee:id/tv_playback").click(timeout=8)
         u(resourceId="com.yoosee:id/tv_cloud_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/rl_functin_bar").wait(timeout=8)
         sleep(10)
-        if not u(resourceId="com.yoosee:id/rl_functin_bar").exists:
+        if u(resourceId="com.yoosee:id/rl_functin_bar").wait_gone(timeout=3.0):
             u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
         u(resourceId="com.yoosee:id/iv_half_screen").click(timeout=5)
         sleep(2)
@@ -1066,12 +1075,13 @@ class JiWei:
         else:
             SameOperation().add_wired(u, video_camera_name)
             u.press('back')
-        u.swipe_ext("down", scale=0.8)
+        if u(resourceId="com.yoosee:id/tv_playback").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
         u(resourceId="com.yoosee:id/tv_playback").click(timeout=8)
         u(resourceId="com.yoosee:id/tv_cloud_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/rl_functin_bar").wait(timeout=8)
         sleep(10)
-        if not u(resourceId="com.yoosee:id/rl_functin_bar").exists:
+        if u(resourceId="com.yoosee:id/rl_functin_bar").wait_gone(timeout=3.0):
             u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
         u(resourceId="com.yoosee:id/iv_half_screen").click(timeout=5)
         sleep(2)

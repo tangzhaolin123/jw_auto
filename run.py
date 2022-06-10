@@ -29,5 +29,6 @@ if __name__=='__main__':
     # cfgpath = "dbconf.ini"
     # config = configparser.ConfigParser()
     # config.read(cfgpath, encoding="gb2312")
-    # rounds = config.get('sec2', '用例执行轮次')
+    # # 控制随时输出报告
+    # do_not_run = config.get('sec1', '是否继续执行自动化')
     main()
