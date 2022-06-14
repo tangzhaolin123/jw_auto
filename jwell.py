@@ -14,6 +14,7 @@ import json
 import requests
 import xlrd
 import configparser
+from PIL import Image
 
 # u = u1.connect('3f3582df')
 # u = u1.connect('VS7P9L4PB6LFMRVW')
@@ -103,7 +104,7 @@ class DingMessage:
 			}
 
 		json_data =json.dumps(data_dict)
-		response = requests.post(self.URL, data = json_data,headers = self.headers,timeout=5)
+		response = requests.post(self.URL, data = json_data,headers = self.headers,timeout=6)
 
 	def dingtalk_robot(self,total,pass_total,fial_total,report_url):
 		data_dict = {
@@ -122,7 +123,7 @@ class DingMessage:
 
 		json_data =json.dumps(data_dict)
 
-		response = requests.post(self.URL, data = json_data,headers = self.headers,timeout=5)
+		response = requests.post(self.URL, data = json_data,headers = self.headers,timeout=6)
 # access_key = 'gMQ_x2DD6xcBsHf7Bwn4iRGFLwLilsmiW5DG3RsI'
 # secret_key = 'CAvmXjwUEZm8d8h_gStjOLKqy9ssx6mSHtlcFsdf'
 
@@ -312,14 +313,25 @@ class AppLog:
 					# print (list_a[i])
 					# 打开文件
 					log_a = self.a+list_a[i]
-					fo_a = open(log_a, "r", encoding="utf-8")
-			# print("文件名为: ", fo.name)
-					line_a = fo_a.read()
+			# 		fo_a = open(log_a, "r", encoding="utf-8")
+			# # print("文件名为: ", fo.name)
+			# 		line_a = fo_a.read()
+			#
+			# 		# file = "1.log"
+			# 		with open(file, 'a') as f:
+			# 			f.write(line_a)
 
-					# file = "1.log"
-					with open(file, 'a') as f:
-						f.write(line_a)
-					fo_a.close()
+					with open(log_a, 'r', encoding='utf-8') as f:
+						fo_a = reversed(f.readlines())
+						fi = 0
+						for line in fo_a:
+							# print(line.strip())
+							with open(file, 'a') as f:
+								f.write(line.strip() + '\n')
+							fi = fi + 1
+							if fi == 200:
+								break
+					# fo_a.close()
 					os.remove(log_a)
 				# Documents文件下的
 				list_b = os.listdir(self.b)
@@ -353,6 +365,16 @@ class AppLog:
 							f.write(line_c)
 						fo_c.close()
 						os.remove(log_c)
+			# with open(file, 'r', encoding='utf-8') as f:
+			# 	a = reversed(f.readlines())
+			# 	i = 0
+			# 	for line in a:
+			# 		print(line.strip())
+			# 		with open('log_new.log', 'a') as f:
+			# 			f.write(line.strip() + '\n')
+			# 		i = i + 1
+			# 		if i == 500:
+			# 			break
 		except:
 			pass
 
@@ -389,6 +411,29 @@ class SanAppLog:
 					with open(file, 'a') as f:
 						f.write(a_1)
 
+					if list_2 == 'self.a_1':
+						with open(str(j) + '.log', 'r', encoding='utf-8') as f:
+							fo_a = reversed(f.readlines())
+							fi = 0
+							for line in fo_a:
+								# print(line.strip())
+								with open(file, 'a') as f:
+									f.write(line.strip() + '\n')
+								fi = fi + 1
+								if fi == 200:
+									break
+					else:
+						with open(str(j) + '.log', 'r') as f:
+							a_1 = f.read()
+						with open(file, 'a') as f:
+							f.write(a_1)
+
+class ResizeImage:
+	def resize_image(self,file, width, height, type):
+		img = Image.open(file)
+		out = img.resize((width, height), Image.ANTIALIAS)  # resize image with high-quality
+		out.save(file, type)
+
 if __name__ == '__main__':
 	#配置文件读取参数
 	cfgpath = "dbconf.ini"
@@ -419,7 +464,7 @@ if __name__ == '__main__':
 	u.watcher.start()
 	# u.app_install('1.apk')
 	if not os.path.exists('1.apk'):
-		#没有版本，下载版本
+		print ("没有版本，下载版本")
 		AutoUpgrade().down_app()
 	#没有安装，安装APP
 	try:
@@ -438,16 +483,18 @@ if __name__ == '__main__':
 	u.watcher.when("深入了解").click()
 	u.watcher.when("我知道了").click()
 	u.watcher.when("消息通知说明").press("back")
+	u.watcher.when("取消推送").press("back")
 	# u.watcher.start()
 	# u.implicitly_wait(10.0)
 	u.settings['wait_timeout'] = 10.0
 	devices_brand = u.shell("getprop ro.product.brand").output.strip()
 	i = 0
-	is_execute = []
 	while i<int(rounds):
+		is_execute = []
 		old_appid = config.get('sec1', 'APP的id')
 		new_appid = AutoUpgrade().app_id()
 		if execute_or_not == '是':
+			print ("远程升级版本")
 			if old_appid != new_appid:
 				AutoUpgrade().down_app()
 				u.app_install('1.apk')
@@ -512,6 +559,9 @@ if __name__ == '__main__':
 					dt2 = dt1.strftime('%Y-%m-%d_%H.%M.%S')
 					image = dt2 + ".png"
 					u.screenshot(image)
+					#修改大小
+					ResizeImage().resize_image(image,216,492,'png')
+					#上传
 					res = up2qiniu(image, "jwtime1", image)
 					os.remove(image)
 				except:
@@ -592,6 +642,9 @@ if __name__ == '__main__':
 							dt2 = dt1.strftime('%Y-%m-%d_%H.%M.%S')
 							image = dt2 + ".png"
 							u.screenshot(image)
+							# 修改大小
+							ResizeImage().resize_image(image, 216, 492, 'png')
+							# 上传
 							res = up2qiniu(image, "jwtime1", image)
 							os.remove(image)
 						except:
@@ -731,7 +784,7 @@ if __name__ == '__main__':
 	# u.app_uninstall('com.yoosee')
 		if do_not_run == '否':
 			break
-		if count_case_fail >=20:
+		elif count_case_fail >=20:
 			u.screen_off()
 			u.unlock()
 		elif count_case_fail >=40:
