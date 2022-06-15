@@ -1403,3 +1403,106 @@ class JiWei:
         u(resourceId="com.yoosee:id/iv_p_video").click(timeout=5)
         assert u(resourceId='com.yoosee:id/tx_rec').wait_gone(timeout=5),'停止录像了，仍显示正在录像状态：REC'
         SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_62(cls, u, video_camera_name):  #监控界面--截图成功和保存
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        u.xpath(
+            '//*[@resource-id="com.yoosee:id/lv_contact"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]/android.widget.LinearLayout[1]').click(
+            timeout=5)
+        sleep(3)
+        u(resourceId="com.yoosee:id/iv_p_screenshot").click(timeout=5)
+        sleep(1)
+        assert "截图成功" in u.toast.get_message(5.0, 10.0, "default message"),'没提示截图成功'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_63(cls, u, video_camera_name):  #监控界面--左下角有截图缩略图
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        u.xpath(
+            '//*[@resource-id="com.yoosee:id/lv_contact"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]/android.widget.LinearLayout[1]').click(
+            timeout=5)
+        sleep(3)
+        u(resourceId="com.yoosee:id/iv_p_screenshot").click(timeout=5)
+        assert u.xpath('//*[@resource-id="com.yoosee:id/layout_p2p"]/android.widget.ImageView[1]').wait(
+            timeout=8), '左下角没显示截图缩略图'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_64(cls, u, video_camera_name):  #监控界面--点击可以查看截图大图
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        u.xpath(
+            '//*[@resource-id="com.yoosee:id/lv_contact"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]/android.widget.LinearLayout[1]').click(
+            timeout=5)
+        sleep(3)
+        u(resourceId="com.yoosee:id/iv_p_screenshot").click(timeout=5)
+        u.xpath('//*[@resource-id="com.yoosee:id/layout_p2p"]/android.widget.ImageView[1]').click(timeout=5)
+        assert u(resourceId="com.yoosee:id/tv_imagegallay_filesize").wait(timeout=5), '点击没能打开查看截图大图'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_65(cls, u, video_camera_name):  #监控界面--无点击操作3秒后隐藏截图
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        u.xpath(
+            '//*[@resource-id="com.yoosee:id/lv_contact"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]/android.widget.LinearLayout[1]').click(
+            timeout=5)
+        sleep(3)
+        u(resourceId="com.yoosee:id/iv_p_screenshot").click(timeout=5)
+        sleep(3)
+        assert u.xpath('//*[@resource-id="com.yoosee:id/layout_p2p"]/android.widget.ImageView[1]').wait_gone(
+            timeout=3), '左下角没显示截图缩略图'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_66(cls, u, video_camera_name):  #快捷入口--时间轴日期当前播放的录像切换到另一天的录像
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        u(resourceId="com.yoosee:id/ll_playback").click(timeout=5)
+        u(resourceId="com.yoosee:id/tv_sdcard_playback").click(timeout=5)
+        u(resourceId="com.yoosee:id/fl_videoplayer_parent").wait(timeout=5)
+        u(resourceId='com.yoosee:id/date_tv')[2].click(timeout=5)
+        sleep(6)
+        if u(text="暂无录像").wait(timeout=5):
+            pass
+        else:
+            if u(resourceId="com.yoosee:id/rl_functin_bar").wait_gone(timeout=3.0):
+                u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
+                sleep(1)
+            play_status = u(resourceId="com.yoosee:id/iv_playback_fast").info
+            sleep(3)
+            assert play_status['enabled'] == True, '切换到另一天录像没有自动播放'
+        SameOperation().quit_app(u)
