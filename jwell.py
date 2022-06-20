@@ -645,6 +645,12 @@ if __name__ == '__main__':
 				#重试
 				for retry_n in range(1,3):
 				#重试一次
+					# 开始录制视频
+					video_start_time = datetime.now()
+					video_name = video_start_time.strftime('%Y-%m-%d_%H.%M.%S')
+					video = 'jw' + video_name + ".mp4"
+					u.screenrecord(video)
+
 					try:
 						eval(u0)(u,video_camera_name)
 						# message(u0+"重新执行"+str(retry_n)+"次OK")
@@ -658,19 +664,19 @@ if __name__ == '__main__':
 						#截图
 						if retry_n == 2:
 							sleep(2)
-						try:
-							dt1 = datetime.now()
-							dt2 = dt1.strftime('%Y-%m-%d_%H.%M.%S')
-							image = dt2 + ".png"
-							u.screenshot(image)
-							# 修改大小
-							ResizeImage().resize_image(image, 216, 492, 'png')
-							# 上传
-							res = up2qiniu(image, "jwtime1", image)
-							os.remove(image)
-						except:
-							res = ''
-							print("截图获取失败")
+						# try:
+						# 	dt1 = datetime.now()
+						# 	dt2 = dt1.strftime('%Y-%m-%d_%H.%M.%S')
+						# 	image = dt2 + ".png"
+						# 	u.screenshot(image)
+						# 	# 修改大小
+						# 	ResizeImage().resize_image(image, 216, 492, 'png')
+						# 	# 上传
+						# 	res = up2qiniu(image, "jwtime1", image)
+						# 	os.remove(image)
+						# except:
+						# 	res = ''
+						# 	print("截图获取失败")
 							# app log获取
 							# log_path = '/sdcard/Android/data/com.yoosee/files/Log/gw_sdk_ad_1.log'
 						try:
@@ -689,11 +695,15 @@ if __name__ == '__main__':
 						except:
 							print ("log获取失败")
 							log_res = ''
-						# if a1.find("AssertionError") >= 0:
-						# 	pos1 = a1.find('AssertionError')
-						# 	# print (pos1)
-						# 	pos3 = a1[pos1 + 15:(pos1 + 40)]
-						# else:
+						#保存上传回放视频
+						try:
+							u.screenrecord.stop()
+							res = up2qiniu(video, "jwtime1", video)
+							# os.remove(video)
+						except:
+							res = ''
+							print("回放视频获取失败")
+
 						pos1 = a1.find('in jwt')
 						pos2 = a1.find('\n', pos1 + 10)
 						pos_1 = a1[pos1 - 23:pos2]
