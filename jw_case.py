@@ -80,56 +80,77 @@ class SameOperation:
 
     def add_wired(self,u,video_camera_name):
         # screen = u.window_size()
-        u(resourceId="com.yoosee:id/button_add").click(timeout=5)
-        sleep(2)
-        u(resourceId='com.yoosee:id/line_add').click(timeout=5)
-        u(resourceId="com.yoosee:id/config_cb").click(timeout=5)
-        u(text='下一步').click(timeout=5)
-        for wt in range(0, 20):
-            # try:
-            #     u.drag(screen[0] / 2, screen[1] / 3, screen[0] / 2, (screen[1] - 600), 0.2)
-            #     sleep(8)
-            # except:
-            #     pass
-            u.swipe_ext("down", scale=0.8)
-            sleep(3)
-            if u(text='加载中').exists:
-                sleep(3)
-            if u(text=video_camera_name).exists:
-                u(text=video_camera_name).click(timeout=5)
-                sleep(6)
-                if u(text='正在添加摄像机').exists:
-                    u.press("back")
-                    u(text='退出').click(timeout=5)
-                else:
-                    break
-        sleep(2)
-        if u(resourceId='com.yoosee:id/et_name').exists:
-            u(resourceId='com.yoosee:id/et_name').set_text("有线连接自动化测试")
-            u.press("back")
-            u(text='确定').click(timeout=5)
+        #防止添加设备到其他账号上
+        u.swipe_ext("down", scale=0.8)
+        u(resourceId='com.yoosee:id/icon_setting_img').wait(timeout=5)
+        u(resourceId='com.yoosee:id/icon_setting_img').click(timeout=5)
+        sleep(1)
+        u(resourceId='com.yoosee:id/icon_setting_img').click(timeout=5)
+        if u(text='gw_test01@sina.com').wait(timeout=5):
+            SameOperation().log_out(u)
             sleep(2)
+            SameOperation().log_in(u, phone_num, phone_pwd)
+        else:
+            u(resourceId='com.yoosee:id/icon_contact').click(timeout=5)
+            sleep(1)
+            u(resourceId='com.yoosee:id/icon_contact').click(timeout=5)
+        #添加设备
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            u(resourceId="com.yoosee:id/button_add").click(timeout=5)
+            sleep(2)
+            u(resourceId='com.yoosee:id/line_add').click(timeout=5)
+            u(resourceId="com.yoosee:id/config_cb").click(timeout=5)
+            u(text='下一步').click(timeout=5)
+            for wt in range(0, 20):
+                # try:
+                #     u.drag(screen[0] / 2, screen[1] / 3, screen[0] / 2, (screen[1] - 600), 0.2)
+                #     sleep(8)
+                # except:
+                #     pass
+                u.swipe_ext("down", scale=0.8)
+                sleep(3)
+                if u(text='加载中').exists:
+                    sleep(3)
+                if u(text=video_camera_name).exists:
+                    u(text=video_camera_name).click(timeout=5)
+                    sleep(6)
+                    if u(text='正在添加摄像机').exists:
+                        u.press("back")
+                        u(text='退出').click(timeout=5)
+                    else:
+                        break
+            sleep(2)
+            if u(resourceId='com.yoosee:id/et_name').exists:
+                u(resourceId='com.yoosee:id/et_name').set_text("有线连接自动化测试")
+                u.press("back")
+                u(text='确定').click(timeout=5)
+                sleep(2)
     def find_deldevices(self,u,set_name):
         # screen = u.window_size()
-        u(resourceId="com.yoosee:id/setting_more_iv").click(timeout=5)
-        sleep(2)
-        u(resourceId="com.yoosee:id/pop_set_ll").click(timeout=5)
-        u(scrollable=True).scroll.to(text=set_name)
-        # for del_i in range(0, 5):
-        #     if u(text= set_name).exists:
-        #         break
-        #     else:
-        #         try:
-        #             u.drag(screen[0] / 2, (screen[1] - 600), screen[0] / 2, screen[1] / 3, 0.3)
-        #             sleep(3)
-        #         except:
-        #             pass
-        sleep(1)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            u(resourceId="com.yoosee:id/setting_more_iv").click(timeout=5)
+            sleep(2)
+            u(resourceId="com.yoosee:id/pop_set_ll").click(timeout=5)
+            if u(text='增值服务').wait(timeout=5):
+                u(scrollable=True).scroll.to(text=set_name)
+            # for del_i in range(0, 5):
+            #     if u(text= set_name).exists:
+            #         break
+            #     else:
+            #         try:
+            #             u.drag(screen[0] / 2, (screen[1] - 600), screen[0] / 2, screen[1] / 3, 0.3)
+            #             sleep(3)
+            #         except:
+            #             pass
+            sleep(1)
 
     def log_in(self,u,user_name,pw_code):
         # 登录
         u(resourceId="com.yoosee:id/et_account").set_text(user_name)
         sleep(2)
+        u(resourceId='com.yoosee:id/et_pwd').click(timeout=5)
         u(resourceId="com.yoosee:id/et_pwd").set_text(pw_code)
         sleep(2)
         u(resourceId='com.yoosee:id/btn_login').click(timeout=5)
@@ -163,6 +184,15 @@ class SameOperation:
         # print (rms)
         return rms
 
+    def img_statuscheck(self,im_1,im_2):
+        image_a = Image.open(im_1)
+        image_b = Image.open(im_2)
+        h1 = image_a.histogram()
+        h2 = image_b.histogram()
+        rms = math.sqrt(reduce(operator.add, list(map(lambda a, b: (a - b) ** 2, h1, h2))) / len(h1))
+        # print (rms)
+        return rms
+
     def advertising_develop(self,u):
         Advertising = 0
         while True:
@@ -185,6 +215,33 @@ class SameOperation:
         u.screenshot('pixel.png')
         img = Image.open('pixel.png')
         return img.getpixel(position)
+
+    def photo_delete(self,u):
+        u(resourceId='com.yoosee:id/icon_setting_img').click(timeout=5)
+        sleep(1)
+        u(resourceId='com.yoosee:id/icon_setting_img').click(timeout=5)
+        u(resourceId='com.yoosee:id/rl_album_low').click(timeout=5)
+        if u(text='选择').wait(timeout=5):
+            u(text='选择').click(timeout=5)
+            u(text='全选').click(timeout=5)
+            u(resourceId='com.yoosee:id/rl_screenshot_alldelete').click(timeout=5)
+            u(resourceId='com.yoosee:id/tv_yes').click(timeout=5)
+            u(resourceId='com.yoosee:id/back_btn').click(timeout=5)
+            u(resourceId='com.yoosee:id/icon_contact').click(timeout=5)
+        else:
+            u(resourceId='com.yoosee:id/back_btn').click(timeout=5)
+            u(resourceId='com.yoosee:id/icon_contact').click(timeout=5)
+
+    def account_sharing(self,u):
+        u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5)
+        u(resourceId='com.yoosee:id/setting_more_iv').click(timeout=5)
+        u(resourceId='com.yoosee:id/pop_share_ll').click(timeout=5)
+        u(resourceId='com.yoosee:id/account_share_tv').click(timeout=5)
+        u(resourceId='com.yoosee:id/tx_save').click(timeout=5)
+        u.xpath("//android.widget.LinearLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]").set_text("gw_test01@sina.com")
+        u(resourceId='com.yoosee:id/confirm_btn').click(timeout=5)
+        u(resourceId='com.yoosee:id/share_confirm_ll').click(timeout=8)
+        sleep(3)
 
 class JiWei:
     @classmethod
@@ -229,7 +286,10 @@ class JiWei:
             u(text="消息通知说明").wait(timeout=5)
         except:
             u.press('back')
-
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            SameOperation().find_deldevices(u,'删除设备')
+            u(text='删除设备').click(timeout=5)
+            u(resourceId='com.yoosee:id/tv_yes').click(timeout=5)
         SameOperation().quit_app(u)
 
     @classmethod
@@ -1323,7 +1383,7 @@ class JiWei:
         SameOperation().quit_app(u)
 
     @classmethod
-    def jwt_58(cls, u, video_camera_name):  #监控界面--显示全屏按钮，无操作5秒后隐藏后
+    def jwt_58(cls, u, video_camera_name):  #监控界面--切换到横屏监控
         SameOperation().app_go(u)
         if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
             pass
@@ -1505,4 +1565,562 @@ class JiWei:
             play_status = u(resourceId="com.yoosee:id/iv_playback_fast").info
             sleep(3)
             assert play_status['enabled'] == True, '切换到另一天录像没有自动播放'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_67(cls, u, video_camera_name):  #快捷入口--横屏 - 暂停键变成播放键
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        u(resourceId="com.yoosee:id/ll_playback").click(timeout=5)
+        u(resourceId="com.yoosee:id/tv_sdcard_playback").click(timeout=5)
+        sleep(5)
+        if not u(resourceId="com.yoosee:id/iv_playback_fast").exists:
+            u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
+            sleep(1)
+        #竖屏时时间轴
+        timeline_icon_coordinates = u(resourceId='com.yoosee:id/fl_videoplayer_parent').center()
+        u(resourceId="com.yoosee:id/iv_half_screen").click(timeout=5)
+        if u(resourceId="com.yoosee:id/ll_landscape_timeline").wait_gone(timeout=3.0):
+            # u.xpath('//android.widget.FrameLayout[1]').click(timeout=5)
+            u.click(timeline_icon_coordinates[0], timeline_icon_coordinates[1])
+            sleep(1)
+        u(resourceId="com.yoosee:id/iv_playback_fast_landscape").wait(timeout=5)
+        play_status = u(resourceId="com.yoosee:id/iv_playback_fast_landscape").info
+        sleep(1)
+        if play_status['enabled'] == True:
+            u(resourceId="com.yoosee:id/play_land_iv").click(timeout=5)
+            sleep(1)
+            play_status = u(resourceId="com.yoosee:id/iv_playback_fast_landscape").info
+            assert play_status['enabled'] == False, '仍在播放'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_68(cls, u, video_camera_name):  #快捷入口--横屏 - 录像暂停，时间轴不动
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        u(resourceId="com.yoosee:id/ll_playback").click(timeout=5)
+        u(resourceId="com.yoosee:id/tv_sdcard_playback").click(timeout=5)
+        sleep(5)
+        if not u(resourceId="com.yoosee:id/iv_playback_fast").exists:
+            u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
+            sleep(1)
+        # 竖屏时时间轴
+        timeline_icon_coordinates = u(resourceId='com.yoosee:id/fl_videoplayer_parent').center()
+        u(resourceId="com.yoosee:id/iv_half_screen").click(timeout=5)
+        if u(resourceId="com.yoosee:id/ll_landscape_timeline").wait_gone(timeout=3.0):
+            # u.xpath('//android.widget.FrameLayout[1]').click(timeout=5)
+            u.click(timeline_icon_coordinates[0], timeline_icon_coordinates[1])
+            sleep(1)
+        u(resourceId="com.yoosee:id/iv_playback_fast_landscape").wait(timeout=5)
+        play_status = u(resourceId="com.yoosee:id/iv_playback_fast_landscape").info
+        sleep(1)
+        if play_status['enabled'] == True:
+            u(resourceId="com.yoosee:id/play_land_iv").click(timeout=5)
+            sleep(1)
+        im_1 = u(resourceId="com.yoosee:id/ll_landscape_timeline").screenshot()
+        im_1.save("timeline_1.jpg")
+        sleep(10)
+        im_2 = u(resourceId="com.yoosee:id/ll_landscape_timeline").screenshot()
+        im_2.save("timeline_2.jpg")
+        im_same = SameOperation().img_statuscheck("timeline_1.jpg","timeline_2.jpg")
+        # print (im_same)
+        assert im_same == 0.0,'录像暂停时间轴有动'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_69(cls, u, video_camera_name):  #快捷入口--横屏 - 暂停键变成播放键
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        u(resourceId="com.yoosee:id/ll_playback").click(timeout=5)
+        u(resourceId="com.yoosee:id/tv_sdcard_playback").click(timeout=5)
+        sleep(5)
+        if not u(resourceId="com.yoosee:id/iv_playback_fast").exists:
+            u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
+            sleep(1)
+        # 竖屏时时间轴
+        timeline_icon_coordinates = u(resourceId='com.yoosee:id/fl_videoplayer_parent').center()
+        u(resourceId="com.yoosee:id/iv_half_screen").click(timeout=5)
+        if u(resourceId="com.yoosee:id/ll_landscape_timeline").wait_gone(timeout=3.0):
+            # u.xpath('//android.widget.FrameLayout[1]').click(timeout=5)
+            u.click(timeline_icon_coordinates[0], timeline_icon_coordinates[1])
+            sleep(1)
+        u(resourceId="com.yoosee:id/iv_playback_fast_landscape").wait(timeout=5)
+        play_status = u(resourceId="com.yoosee:id/iv_playback_fast_landscape").info
+        sleep(1)
+        if play_status['enabled'] == True:
+            u(resourceId="com.yoosee:id/play_land_iv").click(timeout=5)
+            sleep(1)
+        u(resourceId="com.yoosee:id/play_land_iv").click(timeout=5)
+        sleep(1)
+        play_status = u(resourceId="com.yoosee:id/iv_playback_fast_landscape").info
+        assert play_status['enabled'] == True, '没有播放'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_70(cls, u, video_camera_name):  #快捷入口--横屏 - 录像暂停，时间轴不动
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        u(resourceId="com.yoosee:id/ll_playback").click(timeout=5)
+        u(resourceId="com.yoosee:id/tv_sdcard_playback").click(timeout=5)
+        sleep(5)
+        if not u(resourceId="com.yoosee:id/iv_playback_fast").exists:
+            u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
+            sleep(1)
+        # 竖屏时时间轴
+        timeline_icon_coordinates = u(resourceId='com.yoosee:id/fl_videoplayer_parent').center()
+        u(resourceId="com.yoosee:id/iv_half_screen").click(timeout=5)
+        if u(resourceId="com.yoosee:id/ll_landscape_timeline").wait_gone(timeout=3.0):
+            # u.xpath('//android.widget.FrameLayout[1]').click(timeout=5)
+            u.click(timeline_icon_coordinates[0], timeline_icon_coordinates[1])
+            sleep(1)
+        u(resourceId="com.yoosee:id/iv_playback_fast_landscape").wait(timeout=5)
+        play_status = u(resourceId="com.yoosee:id/iv_playback_fast_landscape").info
+        sleep(1)
+        if play_status['enabled'] == True:
+            u(resourceId="com.yoosee:id/play_land_iv").click(timeout=5)
+            sleep(1)
+        u(resourceId="com.yoosee:id/play_land_iv").click(timeout=5)
+        sleep(2)
+        im_1 = u(resourceId="com.yoosee:id/ll_landscape_timeline").screenshot()
+        im_1.save("timeline_1.jpg")
+        sleep(10)
+        im_2 = u(resourceId="com.yoosee:id/ll_landscape_timeline").screenshot()
+        im_2.save("timeline_2.jpg")
+        im_same = SameOperation().img_statuscheck("timeline_1.jpg","timeline_2.jpg")
+        # print (im_same)
+        assert im_same > 0.0,'录像时间轴有动'
+        SameOperation().quit_app(u)
+
+
+    @classmethod
+    def jwt_71(cls, u, video_camera_name):  #快捷入口--竖屏 - 录屏点击录屏后控件上有小红点
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        u(resourceId="com.yoosee:id/ll_playback").wait(timeout=5)
+        u(resourceId="com.yoosee:id/ll_playback").click(timeout=5)
+        u(resourceId="com.yoosee:id/tv_sdcard_playback").click(timeout=5)
+        sleep(10)
+        if not u(resourceId="com.yoosee:id/iv_playback_fast").exists:
+            u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
+            sleep(1)
+        u(resourceId="com.yoosee:id/iv_playback_to_dwonload").click(timeout=5)
+        sleep(2)
+        #控件上小红点
+        assert u(resourceId='com.yoosee:id/iv_state').wait(timeout=8), '控件没有小红点'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_72(cls, u, video_camera_name):  #快捷入口--竖屏 - 录屏结束后可在我的相册中播放
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            # print ('2')
+            if not u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+                u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        SameOperation().photo_delete(u)
+        u(resourceId="com.yoosee:id/ll_playback").click(timeout=5)
+        u(resourceId="com.yoosee:id/tv_sdcard_playback").click(timeout=5)
+        sleep(10)
+        if not u(resourceId="com.yoosee:id/iv_playback_fast").exists:
+            u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
+            sleep(1)
+        u(resourceId="com.yoosee:id/iv_playback_to_dwonload").click(timeout=5)
+        sleep(10)
+        u(resourceId="com.yoosee:id/iv_playback_to_dwonload").click(timeout=5)
+        u.press('back')
+        u(resourceId='com.yoosee:id/icon_setting_img').click(timeout=5)
+        u(resourceId='com.yoosee:id/icon_setting_img').click(timeout=5)
+        u(resourceId='com.yoosee:id/rl_album_low').click(timeout=5)
+        u(resourceId='com.yoosee:id/iv_play').click(timeout=5)
+        u(resourceId='android:id/content').click(timeout=5)
+        sleep(1)
+        assert u(resourceId='com.yoosee:id/v_play').wait(timeout=5), '不能播放'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_73(cls, u, video_camera_name):  #快捷入口账户分享显示访客用户的头像，昵称以及有看头账号
+        SameOperation().app_go(u)
+        # 先判断分享的账号是否已添加分享的设备
+        SameOperation().log_out(u)
+        sleep(3)
+        SameOperation().log_in(u, "gw_test01@sina.com", "abcd1234")
+        sleep(3)
+        if u(resourceId='com.yoosee:id/ll_device').wait(timeout=5):
+            u.press("back")
+        SameOperation().find_deldevices(u, '删除设备')
+        if u(text='删除设备').wait(timeout=5):
+            u(text='删除设备').click(timeout=5)
+            u(resourceId='com.yoosee:id/tv_yes').click(timeout=5)
+        SameOperation().log_out(u)
+        sleep(3)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        # u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5)
+        # u(resourceId='com.yoosee:id/setting_more_iv').click(timeout=5)
+        # u(resourceId='com.yoosee:id/pop_share_ll').click(timeout=5)
+        # u(resourceId='com.yoosee:id/account_share_tv').click(timeout=5)
+        # u(resourceId='com.yoosee:id/tx_save').click(timeout=5)
+        # u.xpath("//android.widget.LinearLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]").set_text("gw_test01@sina.com")
+        # u(resourceId='com.yoosee:id/confirm_btn').click(timeout=5)
+        # u(resourceId='com.yoosee:id/share_confirm_ll').click(timeout=8)
+        # sleep(3)
+        SameOperation().account_sharing(u)
+        assert u(resourceId='com.yoosee:id/account_tv').get_text() == 'gw_test01@sina.com' and u(resourceId='com.yoosee:id/share_account_tv').get_text() == '有看头账号:025611668','昵称以及有看头账号不正确'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_74(cls, u, video_camera_name):  #快捷入口账户分享提示已发送分享邀请
+        SameOperation().app_go(u)
+        # 先判断分享的账号是否已添加分享的设备
+        SameOperation().log_out(u)
+        sleep(3)
+        SameOperation().log_in(u, "gw_test01@sina.com", "abcd1234")
+        sleep(3)
+        if u(resourceId='com.yoosee:id/ll_device').wait(timeout=5):
+            u.press("back")
+        SameOperation().find_deldevices(u, '删除设备')
+        if u(text='删除设备').wait(timeout=5):
+            u(text='删除设备').click(timeout=5)
+            u(resourceId='com.yoosee:id/tv_yes').click(timeout=5)
+        SameOperation().log_out(u)
+        sleep(3)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        # u(resourceId='com.yoosee:id/setting_more_iv').click(timeout=5)
+        # u(resourceId='com.yoosee:id/pop_share_ll').click(timeout=5)
+        # u(resourceId='com.yoosee:id/account_share_tv').click(timeout=5)
+        # u(resourceId='com.yoosee:id/tx_save').click(timeout=5)
+        # u.xpath("//android.widget.LinearLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]").set_text("gw_test01@sina.com")
+        # u(resourceId='com.yoosee:id/confirm_btn').click(timeout=5)
+        # u(resourceId='com.yoosee:id/share_confirm_ll').click(timeout=8)
+        # sleep(3)
+        SameOperation().account_sharing(u)
+        assert u(text='已发送分享邀请').wait(timeout=5),'没有提示已发送分享邀请'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_75(cls, u, video_camera_name):  #快捷入口账户分享访客账号可在设备列表中看到分享弹窗。
+        SameOperation().app_go(u)
+        # 先判断分享的账号是否已添加分享的设备
+        SameOperation().log_out(u)
+        sleep(3)
+        SameOperation().log_in(u, "gw_test01@sina.com", "abcd1234")
+        sleep(3)
+        if u(resourceId='com.yoosee:id/ll_device').wait(timeout=5):
+            u.press("back")
+        SameOperation().find_deldevices(u, '删除设备')
+        if u(text='删除设备').wait(timeout=5):
+            u(text='删除设备').click(timeout=5)
+            u(resourceId='com.yoosee:id/tv_yes').click(timeout=5)
+        SameOperation().log_out(u)
+        sleep(3)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        SameOperation().account_sharing(u)
+
+        SameOperation().log_out(u)
+        sleep(3)
+        SameOperation().log_in(u,"gw_test01@sina.com","abcd1234")
+        sleep(3)
+        assert u(resourceId='com.yoosee:id/ll_device').wait(timeout=8), '没有收到分享弹窗。'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_76(cls, u, video_camera_name):  #快捷入口账户分享弹框提示“收到xxxx的分享”。
+        SameOperation().app_go(u)
+        # 先判断分享的账号是否已添加分享的设备
+        SameOperation().log_out(u)
+        sleep(3)
+        SameOperation().log_in(u, "gw_test01@sina.com", "abcd1234")
+        sleep(3)
+        if u(resourceId='com.yoosee:id/ll_device').wait(timeout=5):
+            u.press("back")
+        SameOperation().find_deldevices(u, '删除设备')
+        if u(text='删除设备').wait(timeout=5):
+            u(text='删除设备').click(timeout=5)
+            u(resourceId='com.yoosee:id/tv_yes').click(timeout=5)
+        SameOperation().log_out(u)
+        sleep(3)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        SameOperation().account_sharing(u)
+
+        SameOperation().log_out(u)
+        sleep(3)
+        SameOperation().log_in(u,"gw_test01@sina.com","abcd1234")
+        sleep(3)
+        assert '向你分享了一台摄像机' in u(resourceId='com.yoosee:id/content_tv').get_text(), '没有收到好友的分享'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_77(cls, u, video_camera_name):  #快捷入口账户分享分享弹窗点击忽略弹框消失。
+        SameOperation().app_go(u)
+        # 先判断分享的账号是否已添加分享的设备
+        SameOperation().log_out(u)
+        sleep(3)
+        SameOperation().log_in(u, "gw_test01@sina.com", "abcd1234")
+        sleep(3)
+        if u(resourceId='com.yoosee:id/ll_device').wait(timeout=5):
+            u.press("back")
+        SameOperation().find_deldevices(u, '删除设备')
+        if u(text='删除设备').wait(timeout=5):
+            u(text='删除设备').click(timeout=5)
+            u(resourceId='com.yoosee:id/tv_yes').click(timeout=5)
+        SameOperation().log_out(u)
+        sleep(3)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        SameOperation().account_sharing(u)
+
+        SameOperation().log_out(u)
+        sleep(3)
+        SameOperation().log_in(u,"gw_test01@sina.com","abcd1234")
+        sleep(6)
+        u(text='忽略').click(timeout=5)
+        assert u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0), '点击忽略弹框未消失'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_78(cls, u, video_camera_name):  #快捷入口账户分享跳转到“添加设备界面”
+        SameOperation().app_go(u)
+        #先判断分享的账号是否已添加分享的设备
+        SameOperation().log_out(u)
+        sleep(3)
+        SameOperation().log_in(u, "gw_test01@sina.com", "abcd1234")
+        sleep(3)
+        if u(resourceId='com.yoosee:id/ll_device').wait(timeout=5):
+            u.press("back")
+        SameOperation().find_deldevices(u,'删除设备')
+        if u(text='删除设备').wait(timeout=5):
+            u(text='删除设备').click(timeout=5)
+            u(resourceId='com.yoosee:id/tv_yes').click(timeout=5)
+        SameOperation().log_out(u)
+        sleep(3)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        SameOperation().account_sharing(u)
+
+        SameOperation().log_out(u)
+        sleep(3)
+        SameOperation().log_in(u,"gw_test01@sina.com","abcd1234")
+        sleep(3)
+        u(text='接受').click(timeout=5)
+        assert u(text='添加成功').wait(timeout=5), '没有跳转到“添加设备界面”'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_79(cls, u,video_camera_name):  # 设备升级弹框，弹出升级设备的弹框
+        u.app_clear('com.yoosee')  # 清除应用数据
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+        assert u(text='发现新固件').wait(timeout=10),'没有升级设备的弹框'
+        u.press("back")
+        sleep(6)
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_80(cls, u, video_camera_name):  # 设备升级弹框，点击立即更新，升级设备
+        u.app_clear('com.yoosee')  # 清除应用数据
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+        u(text='立即更新').wait(timeout=10)
+        u(text='立即更新').click()
+        assert u(text='摄像机升级中…').wait(timeout=10), '没有升级中'
+        sleep(60)
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_81(cls, u, video_camera_name):  # 设备升级弹框，点击后台升级
+        u.app_clear('com.yoosee')  # 清除应用数据
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+        u(text='立即更新').wait(timeout=10)
+        u(text='立即更新').click()
+        sleep(2)
+        u(resourceId='com.yoosee:id/tv_know').click(timeout=5)
+        u(resourceId='com.yoosee:id/tv_background').click(timeout=5)
+        sleep(1)
+        u(resourceId='com.yoosee:id/icon_contact').click(timeout=5)
+        sleep(20)
+        for offline_1 in range(8):
+            u.swipe_ext("down", scale=0.8)
+            sleep(6)
+            if u(resourceId="com.yoosee:id/tv_offline").wait(timeout=8.0):
+                break
+        for offline_2 in range(8):
+            u.swipe_ext("down", scale=0.8)
+            sleep(6)
+            if not u(resourceId="com.yoosee:id/tv_offline").exists:
+                break
+        assert not u(resourceId="com.yoosee:id/tv_offline").exists,'(等了1分钟)设备还是离线'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_82(cls, u, video_camera_name):  # 设备升级弹框，点击弹框右上角“×”
+        u.app_clear('com.yoosee')  # 清除应用数据
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+        u(text='立即更新').wait(timeout=10)
+        u(resourceId='com.yoosee:id/iv_close_device_update').click(timeout=5)
+        sleep(2)
+        assert not u(text="发现新固件").exists, '点击弹框右上角“×”，弹框没消失'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_83(cls, u,video_camera_name):  # 设备列表测到有新的设备固件且设备列表有弹窗提示
+        u.app_clear('com.yoosee')  # 清除应用数据
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+        assert u(text='发现新固件').wait(timeout=10),'设备列表没有升级设备的弹框'
+        u.press("back")
+        sleep(6)
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_84(cls, u, video_camera_name):  # 设备列表可以正常升级设备固件
+        u.app_clear('com.yoosee')  # 清除应用数据
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+        u(text='立即更新').wait(timeout=10)
+        u(text='立即更新').click()
+        sleep(2)
+        u(resourceId='com.yoosee:id/tv_know').click(timeout=5)
+        u(resourceId='com.yoosee:id/tv_background').click(timeout=5)
+        sleep(1)
+        u(resourceId='com.yoosee:id/icon_contact').click(timeout=5)
+        sleep(20)
+        for offline_1 in range(8):
+            u.swipe_ext("down", scale=0.8)
+            sleep(6)
+            if u(resourceId="com.yoosee:id/tv_offline").wait(timeout=8.0):
+                break
+        for offline_2 in range(8):
+            u.swipe_ext("down", scale=0.8)
+            sleep(6)
+            if not u(resourceId="com.yoosee:id/tv_offline").exists:
+                break
+        assert not u(resourceId="com.yoosee:id/tv_offline").exists,'(等了1分钟)设备还是离线'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_85(cls, u, video_camera_name):  #设置-网络设备设置页面，点击“固件更新”弹出弹窗
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        SameOperation().find_deldevices(u, '固件更新')
+        u(resourceId='com.yoosee:id/check_device_update').click(timeout=5)
+        assert u(text='发现新固件').wait(timeout=6),'没有升级设备的弹框'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_86(cls, u, video_camera_name):  #设置-网络设备设置页面正常升级设备固件
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        SameOperation().find_deldevices(u, '固件更新')
+        u(resourceId='com.yoosee:id/check_device_update').click(timeout=5)
+        u(text='立即更新').click()
+        sleep(2)
+        u(resourceId='com.yoosee:id/tv_know').click(timeout=5)
+        u(resourceId='com.yoosee:id/tv_background').click(timeout=5)
+        sleep(2)
+        u.press('back')
+        sleep(20)
+        for offline_1 in range(8):
+            u.swipe_ext("down", scale=0.8)
+            sleep(6)
+            if u(resourceId="com.yoosee:id/tv_offline").wait(timeout=8.0):
+                break
+        for offline_2 in range(8):
+            u.swipe_ext("down", scale=0.8)
+            sleep(6)
+            if not u(resourceId="com.yoosee:id/tv_offline").exists:
+                break
+        assert not u(resourceId="com.yoosee:id/tv_offline").exists, '(等了1分钟)设备还是离线'
         SameOperation().quit_app(u)

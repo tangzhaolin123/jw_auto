@@ -473,17 +473,17 @@ if __name__ == '__main__':
 		u.app_install('1.apk')
 		app_version = u.app_info('com.yoosee')['versionName']
 
-	#监控弹框
-	u.watcher.when("同意").click()
-	u.watcher.when("允许").click()
-	u.watcher.when("仅在前台使用应用时允许").click()
-	u.watcher.when("仅在使用该应用时允许").click()
-	u.watcher.when("双指可放大画面").click()
-	u.watcher.when("可以尝试上下左右拖动画面").click()
-	u.watcher.when("深入了解").click()
-	u.watcher.when("我知道了").click()
-	u.watcher.when("消息通知说明").press("back")
-	u.watcher.when("取消推送").press("back")
+	# #监控弹框
+	# u.watcher.when("同意").click()
+	# u.watcher.when("允许").click()
+	# u.watcher.when("仅在前台使用应用时允许").click()
+	# u.watcher.when("仅在使用该应用时允许").click()
+	# u.watcher.when("双指可放大画面").click()
+	# u.watcher.when("可以尝试上下左右拖动画面").click()
+	# u.watcher.when("深入了解").click()
+	# u.watcher.when("消息通知说明").press("back")
+	# u.watcher.when("取消推送").press("back")
+	# u.watcher.when("立即更新").press("back")
 	# u.watcher.start()
 	# u.implicitly_wait(10.0)
 	u.settings['wait_timeout'] = 10.0
@@ -517,6 +517,18 @@ if __name__ == '__main__':
 		start_time = datetime.now()
 		# u.watcher.stop()
 		for l0 in range(1, len(Caselist) + 1):
+			# 监控弹框
+			u.watcher.when("同意").click()
+			u.watcher.when("允许").click()
+			u.watcher.when("仅在前台使用应用时允许").click()
+			u.watcher.when("仅在使用该应用时允许").click()
+			u.watcher.when("双指可放大画面").click()
+			u.watcher.when("可以尝试上下左右拖动画面").click()
+			u.watcher.when("深入了解").click()
+			u.watcher.when("消息通知说明").press("back")
+			u.watcher.when("取消推送").press("back")
+			u.watcher.when('继续安装').click()
+
 			interval_time1 = datetime.now()
 			a0 = int(Caselist[l0 - 1])
 			is_execute.append(Caselist[l0 - 1])
@@ -528,11 +540,20 @@ if __name__ == '__main__':
 			sleep(1)
 			u.press("home")
 			sleep(1)
+			# print (a0)
 			#监视器控制
 			if a0 == 1 or a0 == 2:
 				# 停止所有监视
 				u.watcher.stop()
+			elif a0 == 3:
+				u.watcher.when("我知道了").click()
+				u.watcher.when("忽略").click()
+				u.watcher.start()
+			elif a0 == 79 or a0 == 80 or a0 == 81 or a0 == 82 or a0 == 83 or a0 == 84 or a0 == 85 or a0 == 86:
+				u.watcher.start()
 			else:
+				u.watcher.when("我知道了").click()
+				u.watcher.when("发现新固件").press("back")
 				u.watcher.start()
 			try:
 				if a0 < 10:
@@ -563,7 +584,7 @@ if __name__ == '__main__':
 					ResizeImage().resize_image(image,216,492,'png')
 					#上传
 					res = up2qiniu(image, "jwtime1", image)
-					os.remove(image)
+					# os.remove(image)
 				except:
 					res = ''
 					print ("截图获取失败")
@@ -701,8 +722,9 @@ if __name__ == '__main__':
 					SameOperation().quit_app(u)
 				if u.uiautomator.running() == False:
 					u.uiautomator.start()
-			#关闭监控
-			u.watcher.stop()
+			#关闭监视
+			# u.watcher.stop()
+			u.watcher.reset()
 			# 控制随时输出报告
 			config.read(cfgpath, encoding="gb2312")
 			do_not_run = config.get('sec1', '是否继续执行自动化')
