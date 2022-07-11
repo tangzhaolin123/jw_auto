@@ -15,6 +15,7 @@ import requests
 import xlrd
 import configparser
 from PIL import Image
+import multiprocessing
 
 # u = u1.connect('3f3582df')
 # u = u1.connect('VS7P9L4PB6LFMRVW')
@@ -86,6 +87,23 @@ class DingMessage:
 					"> **APK版本:** <font color=#000000>" + app_version + "</font>\n\n"
 				}
 			}
+		elif "重执行2次" in case_code:
+			data_dict = {
+				"msgtype": "markdown",
+
+				"markdown": {
+					"title": "测试异常提示",
+					"text": "#### **<font color=#FF0000>" + case_code + "测试异常**</font>\n\n"
+																		"> **用例名称:** <font color=#000000>" + case_name + "</font>\n\n"
+																														 "> **前置条件:** <font color=#000000>" + premise_conditions + "</font>\n\n"
+																																												   "> **操作步骤:** <font color=#000000>" + case_steps + "</font>\n\n"
+																																																									 "> **预期结果:** <font color=#000000>" + expected_result + "</font>\n\n"
+																																																																							"> **APK版本:** <font color=#000000>" + app_version + "</font>\n\n"
+																																																																																				"[查看报错时视频](" + result_url + ')\n\n'
+																																																																																											"[查看APP日志](" + result_logurl + ')'
+				}
+			}
+
 		else:
 			data_dict = {
 				"msgtype":"markdown",
@@ -434,6 +452,50 @@ class ResizeImage:
 		out = img.resize((width, height), Image.ANTIALIAS)  # resize image with high-quality
 		out.save(file, type)
 
+class FileUp:
+    def find_queue(self,queue):
+        file_list = os.listdir()
+        #print(file_list)
+        # file_list =['1234.txt', '2022-202.zip', '2022-203.zip']
+        for file_name in file_list:
+            if queue.full():
+                print("队列已满!")
+                break
+            if '2022-' in file_name:
+                queue.put(file_name)
+                print(file_name)
+                sleep(0.5)
+
+    def up_queue(self,queue):
+        # 循环读取队列消息
+        while True:
+            # 队列为空，停止读取
+            if queue.empty():
+                print("---队列已空---")
+                break
+
+            # 读取消息并输出
+            result = queue.get()
+            print(result)
+            res = up2qiniu(result, "jwtime1", result)
+            sleep(5)
+            r = requests.get(url=res)
+            if r.status_code == 200:
+                os.remove(result)
+
+    def main(self):
+        #while True:
+            # 创建消息队列
+        queue = multiprocessing.Queue(5)
+        # 创建子进程
+        p1 = multiprocessing.Process(target=self.find_queue, args=(queue,))
+        p1.start()
+        # 等待p1写数据进程执行结束后，再往下执行
+        p1.join()
+        p1 = multiprocessing.Process(target=self.up_queue, args=(queue,))
+        p1.start()
+        sleep(3)
+
 if __name__ == '__main__':
 	#配置文件读取参数
 	cfgpath = "dbconf.ini"
@@ -526,8 +588,9 @@ if __name__ == '__main__':
 			u.watcher.when("可以尝试上下左右拖动画面").click()
 			u.watcher.when("深入了解").click()
 			u.watcher.when("消息通知说明").press("back")
-			u.watcher.when("取消推送").press("back")
+			#u.watcher.when("取消推送").press("back")
 			u.watcher.when('继续安装').click()
+			u.watcher.when("您将不再接收此设备的报警推送").press("back")
 
 			interval_time1 = datetime.now()
 			a0 = int(Caselist[l0 - 1])
@@ -551,7 +614,12 @@ if __name__ == '__main__':
 				u.watcher.start()
 			elif a0 == 79 or a0 == 80 or a0 == 81 or a0 == 82 or a0 == 83 or a0 == 84 or a0 == 85 or a0 == 86:
 				u.watcher.start()
+			elif a0 ==95 or a0 ==96 or a0 ==97 or a0 ==98 or a0 ==99 or a0 ==100:
+				u.watcher.when("我知道了").click()
+				u.watcher.when("发现新固件").press("back")
+				u.watcher.start()
 			else:
+				u.watcher.when("取消推送").press("back")
 				u.watcher.when("我知道了").click()
 				u.watcher.when("发现新固件").press("back")
 				u.watcher.start()
@@ -585,6 +653,11 @@ if __name__ == '__main__':
 					#上传
 					res = up2qiniu(image, "jwtime1", image)
 					# os.remove(image)
+					#上传是否成功
+					sleep(2)
+					upload_or_not = requests.get(url=res)
+					if upload_or_not.status_code == 200:
+						os.remove(image)
 				except:
 					res = ''
 					print ("截图获取失败")
@@ -600,7 +673,12 @@ if __name__ == '__main__':
 					log_res = up2qiniu(log_file, "jwtime1", log_file)
 					# print (log_res)
 					try:
-						os.remove(log_file)
+						# os.remove(log_file)
+						sleep(2)
+						upload_or_not = requests.get(url=log_res)
+						if upload_or_not.status_code == 200:
+							os.remove(log_file)
+
 					except:
 						pass
 				except:
@@ -637,7 +715,6 @@ if __name__ == '__main__':
 				except:
 					pass
 				SameOperation().quit_app(u)
-
 				#是否因为锁屏而报错
 				if u.info.get("screenOn") != True:
 					u.screen_off()
@@ -645,38 +722,72 @@ if __name__ == '__main__':
 				#重试
 				for retry_n in range(1,3):
 				#重试一次
-					# 开始录制视频
-					video_start_time = datetime.now()
-					video_name = video_start_time.strftime('%Y-%m-%d_%H.%M.%S')
-					video = 'jw' + video_name + ".mp4"
-					u.screenrecord(video)
-
 					try:
+						if retry_n == 2:
+							# 开始录制视频
+							video_start_time = datetime.now()
+							video_name = video_start_time.strftime('%Y-%m-%d_%H.%M.%S')
+							video = 'jw' + video_name + ".mp4"
+							u.screenrecord(video)
+
 						eval(u0)(u,video_camera_name)
 						# message(u0+"重新执行"+str(retry_n)+"次OK")
 						DingMessage().dingtalk_testexception(case_testexceptioninformation[0]+"重新执行"+str(retry_n)+"次",case_testexceptioninformation[2],case_testexceptioninformation[3],case_testexceptioninformation[4],case_testexceptioninformation[5],res,app_version,log_res)
 
 						count_success = count_success + 1
+						if retry_n == 2:
+							u.screenrecord.stop()
+							sleep(2)
 						break
 					except Exception as err:
 						a1 = traceback.format_exc()
 						print(a1)
 						#截图
-						if retry_n == 2:
-							sleep(2)
-						# try:
-						# 	dt1 = datetime.now()
-						# 	dt2 = dt1.strftime('%Y-%m-%d_%H.%M.%S')
-						# 	image = dt2 + ".png"
-						# 	u.screenshot(image)
-						# 	# 修改大小
-						# 	ResizeImage().resize_image(image, 216, 492, 'png')
-						# 	# 上传
-						# 	res = up2qiniu(image, "jwtime1", image)
-						# 	os.remove(image)
-						# except:
-						# 	res = ''
-						# 	print("截图获取失败")
+						try:
+							# dt1 = datetime.now()
+							# dt2 = dt1.strftime('%Y-%m-%d_%H.%M.%S')
+							# image = dt2 + ".png"
+							# u.screenshot(image)
+							# # 修改大小
+							# ResizeImage().resize_image(image, 216, 492, 'png')
+							# # 上传
+							# res = up2qiniu(image, "jwtime1", image)
+							# # os.remove(image)
+							# #是否上传成功，成功了删除
+							# sleep(2)
+							if retry_n == 2:
+								sleep(2)
+								u.screenrecord.stop()
+								sleep(3)
+								res = up2qiniu(video, "jwtime1", video)
+								sleep(6)
+								#print (res)
+							else:
+								dt1 = datetime.now()
+								dt2 = dt1.strftime('%Y-%m-%d_%H.%M.%S')
+								image = dt2 + ".png"
+								u.screenshot(image)
+								# 修改大小
+								ResizeImage().resize_image(image, 216, 492, 'png')
+								# 上传
+								res = up2qiniu(image, "jwtime1", image)
+								# os.remove(image)
+								#是否上传成功，成功了删除
+								sleep(2)
+								upload_or_not = requests.get(url=res)
+								if upload_or_not.status_code == 200:
+									os.remove(image)
+
+							# upload_or_not = requests.get(url=res)
+							# #print ('是否成功上传',upload_or_not.status_code)
+							# if upload_or_not.status_code == 200:
+							# 	if retry_n == 2:
+							# 		os.remove(video)
+							# 	else:
+							# 		os.remove(image)
+						except:
+							res = ''
+							print("截图获取失败")
 							# app log获取
 							# log_path = '/sdcard/Android/data/com.yoosee/files/Log/gw_sdk_ad_1.log'
 						try:
@@ -689,20 +800,26 @@ if __name__ == '__main__':
 							log_res = up2qiniu(log_file, "jwtime1", log_file)
 							# print (log_res)
 							try:
-								os.remove(log_file)
+								# os.remove(log_file)
+								# 是否上传成功，成功了删除
+								sleep(2)
+								upload_or_not = requests.get(url=log_res)
+								if upload_or_not.status_code == 200:
+									os.remove(log_file)
 							except:
 								pass
 						except:
 							print ("log获取失败")
 							log_res = ''
 						#保存上传回放视频
-						try:
-							u.screenrecord.stop()
-							res = up2qiniu(video, "jwtime1", video)
-							# os.remove(video)
-						except:
-							res = ''
-							print("回放视频获取失败")
+						# if retry_n == 2:
+						# 	try:
+						# 		u.screenrecord.stop()
+						# 		res = up2qiniu(video, "jwtime1", video)
+						# 		# os.remove(video)
+						# 	except:
+						# 		res = ''
+						# 		print("回放视频获取失败")
 
 						pos1 = a1.find('in jwt')
 						pos2 = a1.find('\n', pos1 + 10)
@@ -710,10 +827,20 @@ if __name__ == '__main__':
 						pos3 = re.sub('\n', "", pos_1)
 						# w = u0+"重新执行"+str(retry_n)+"次仍报错"+pos3+'\n'+ res
 						# w_report += u0+"重新执行"+str(retry_n)+"次仍报错"+pos3+'\n' +'<br />'+ '<a href='+res+'>查看报错图片</a>' +'<br />' #'<a href='+res+'>图片</a>'
-						w_report += '<a href='+res+'>查看重新测试第'+str(retry_n)+'次报错图片</a>' +'<br />' +'<a href='+log_res+'>查看重新测试第'+str(retry_n)+'次报错日志</a>' +'<br />'#'<a href='+res+'>图片</a>'
+						if retry_n == 2:
+							w_report += '<a href=' + res + '>查看重新测试第' + str(
+								retry_n) + '次报错视频</a>' + '<br />' + '<a href=' + log_res + '>查看重新测试第' + str(
+								retry_n) + '次报错日志</a>' + '<br />'  # '<a href='+res+'>图片</a>'
+						else:
+							w_report += '<a href='+res+'>查看重新测试第'+str(retry_n)+'次报错图片</a>' +'<br />' +'<a href='+log_res+'>查看重新测试第'+str(retry_n)+'次报错日志</a>' +'<br />'#'<a href='+res+'>图片</a>'
 						robot_log_w += dt2+u0+"重新执行"+str(retry_n)+"次仍报错"+pos3+'\n'
 						# fail_caselog.append(w_report)
 						# case_number.append(u0)
+						#删除视频
+						if retry_n == 2 and res != '':
+							upload_or_not = requests.get(url=res)
+							if upload_or_not.status_code == 200:
+								os.remove(video)
 						try:
 							interval_time3 = datetime.now()
 							if interval_time3 - interval_time2 > timedelta(seconds=20):
@@ -814,6 +941,10 @@ if __name__ == '__main__':
 		# if i == 20:
 		DingMessage().dingtalk_robot(str(case_len),str(count_success),str(count_case_fail),report_url)
 	# u.app_uninstall('com.yoosee')
+		try:
+			FileUp().main()
+		except:
+			pass
 		if do_not_run == '否':
 			break
 		elif count_case_fail >=20:
