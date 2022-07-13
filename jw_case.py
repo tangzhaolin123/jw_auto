@@ -3,12 +3,13 @@ from time import sleep
 import os
 import re
 import uiautomator2 as u2
-from PIL import Image
+from PIL import Image,ImageStat
 import math
 import operator
 from functools import reduce
 import threading
 import configparser
+import cv2
 
 
 cfgpath = "dbconf.ini"
@@ -221,6 +222,17 @@ class SameOperation:
         u.screenshot('pixel.png')
         img = Image.open('pixel.png')
         return img.getpixel(position)
+
+    def brightness(self, im_file):
+        im = Image.open(im_file).convert('L')
+        stat = ImageStat.Stat(im)
+        return stat.rms[0]
+
+    def getImageVar(self,imgPath):
+        image = cv2.imread(imgPath)
+        img2gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        imageVar = cv2.Laplacian(img2gray, cv2.CV_64F).var()
+        return imageVar
 
     def photo_delete(self,u):
         u(resourceId='com.yoosee:id/icon_setting_img').click(timeout=5)
@@ -1658,12 +1670,15 @@ class JiWei:
         u(resourceId="com.yoosee:id/ll_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/tv_sdcard_playback").click(timeout=5)
         sleep(5)
+        u(resourceId="com.yoosee:id/fl_videoplayer_parent").swipe("right", steps=20)
+        sleep(5)
         if not u(resourceId="com.yoosee:id/iv_playback_fast").exists:
             u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
             sleep(1)
         # 竖屏时时间轴
         timeline_icon_coordinates = u(resourceId='com.yoosee:id/fl_videoplayer_parent').center()
         u(resourceId="com.yoosee:id/iv_half_screen").click(timeout=5)
+        sleep(2)
         if u(resourceId="com.yoosee:id/ll_landscape_timeline").wait_gone(timeout=3.0):
             # u.xpath('//android.widget.FrameLayout[1]').click(timeout=5)
             u.click(timeline_icon_coordinates[0], timeline_icon_coordinates[1])
@@ -1735,7 +1750,9 @@ class JiWei:
         u(resourceId="com.yoosee:id/ll_playback").wait(timeout=5)
         u(resourceId="com.yoosee:id/ll_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/tv_sdcard_playback").click(timeout=5)
-        sleep(10)
+        sleep(5)
+        u(resourceId="com.yoosee:id/fl_videoplayer_parent").swipe("right", steps=20)
+        sleep(5)
         if not u(resourceId="com.yoosee:id/iv_playback_fast").exists:
             u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
             sleep(1)
@@ -1760,7 +1777,9 @@ class JiWei:
         SameOperation().photo_delete(u)
         u(resourceId="com.yoosee:id/ll_playback").click(timeout=5)
         u(resourceId="com.yoosee:id/tv_sdcard_playback").click(timeout=5)
-        sleep(10)
+        sleep(5)
+        u(resourceId="com.yoosee:id/fl_videoplayer_parent").swipe("right", steps=20)
+        sleep(5)
         if not u(resourceId="com.yoosee:id/iv_playback_fast").exists:
             u(resourceId="com.yoosee:id/rl_vedioplayer_area").click(timeout=5)
             sleep(1)
@@ -2572,4 +2591,526 @@ class JiWei:
         u(resourceId='com.yoosee:id/view_img_video').wait(timeout=5)
         u(resourceId='com.yoosee:id/icon_contact').click(timeout=5)
         assert not u(resourceId="com.yoosee:id/msgLayout").wait(timeout=5), '仍存在卡片消息'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_103(cls, u, video_camera_name):  # 智能守护显示“删除”、“多选”选项
+        u.app_clear('com.yoosee')  # 清除应用数据
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+        sleep(5)
+        u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
+        u(text="推送消息提醒").wait(timeout=10)
+        try:
+            u(text="消息通知说明").wait(timeout=10)
+        except:
+            u(resourceId="com.yoosee:id/iv_back").click(timeout=5)
+
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        #sleep(190)
+        u.swipe_ext("down", scale=0.8)
+        sleep(2)
+        u(resourceId="com.yoosee:id/msgLayout").wait(timeout=5)
+        u(resourceId="com.yoosee:id/msgLayout").click(timeout=5)
+        u(resourceId='com.yoosee:id/item_ll').wait(timeout=5)
+        sleep(1)
+        u(resourceId="com.yoosee:id/item_ll").long_click()
+        sleep(2)
+        assert u(text="删除").exists and u(text="多选").exists,'没有显示删除、多选选项'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_104(cls, u, video_camera_name):  # 智能守护择取消则不会删除
+        u.app_clear('com.yoosee')  # 清除应用数据
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+        sleep(5)
+        u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
+        u(text="推送消息提醒").wait(timeout=10)
+        try:
+            u(text="消息通知说明").wait(timeout=10)
+        except:
+            u(resourceId="com.yoosee:id/iv_back").click(timeout=5)
+
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        #sleep(190)
+        u.swipe_ext("down", scale=0.8)
+        sleep(2)
+        u(resourceId="com.yoosee:id/msgLayout").wait(timeout=5)
+        u(resourceId="com.yoosee:id/msgLayout").click(timeout=5)
+        u(resourceId='com.yoosee:id/item_ll').wait(timeout=5)
+        sleep(1)
+        u(resourceId="com.yoosee:id/item_ll").long_click()
+        u(text="删除").click(timeout=5)
+        u.xpath(
+            '//*[@resource-id="android:id/content"]/android.widget.LinearLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[1]').click(timeout=5)
+        assert u(resourceId='com.yoosee:id/view_img_video').wait(timeout=5),'取消没有返回'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_105(cls, u, video_camera_name):  # 智能守护选择确认则删除成功
+        u.app_clear('com.yoosee')  # 清除应用数据
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+        sleep(5)
+        u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
+        u(text="推送消息提醒").wait(timeout=10)
+        try:
+            u(text="消息通知说明").wait(timeout=10)
+        except:
+            u(resourceId="com.yoosee:id/iv_back").click(timeout=5)
+
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        #sleep(190)
+        u.swipe_ext("down", scale=0.8)
+        sleep(2)
+        u(resourceId="com.yoosee:id/msgLayout").wait(timeout=5)
+        u(resourceId="com.yoosee:id/msgLayout").click(timeout=5)
+        u(resourceId='com.yoosee:id/item_ll').wait(timeout=5)
+        sleep(1)
+        del_name = u(resourceId="com.yoosee:id/allarm_time").get_text()
+        sleep(2)
+        u(resourceId="com.yoosee:id/item_ll").long_click()
+        u(text="删除").click(timeout=5)
+        u.xpath(
+            '//*[@resource-id="android:id/content"]/android.widget.LinearLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]').click(timeout=5)
+        sleep(2)
+        assert not u(text=del_name).exists,'删除的项仍存在'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_106(cls, u, video_camera_name):  # 智能守护选择多选，进入全选状态
+        u.app_clear('com.yoosee')  # 清除应用数据
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+        sleep(5)
+        u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
+        u(text="推送消息提醒").wait(timeout=10)
+        try:
+            u(text="消息通知说明").wait(timeout=10)
+        except:
+            u(resourceId="com.yoosee:id/iv_back").click(timeout=5)
+
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        #sleep(190)
+        u.swipe_ext("down", scale=0.8)
+        sleep(2)
+        u(resourceId="com.yoosee:id/msgLayout").wait(timeout=5)
+        u(resourceId="com.yoosee:id/msgLayout").click(timeout=5)
+        u(resourceId='com.yoosee:id/item_ll').wait(timeout=5)
+        del_name = u(resourceId="com.yoosee:id/allarm_time").get_text()
+        sleep(2)
+        u(resourceId="com.yoosee:id/item_ll").long_click()
+        u(text="多选").click(timeout=5)
+        assert u(text='全选').wait(timeout=5), '不存在全选'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_107(cls, u, video_camera_name):  # 智能守护择点击“X”退出全选
+        u.app_clear('com.yoosee')  # 清除应用数据
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+        sleep(5)
+        u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
+        u(text="推送消息提醒").wait(timeout=10)
+        try:
+            u(text="消息通知说明").wait(timeout=10)
+        except:
+            u(resourceId="com.yoosee:id/iv_back").click(timeout=5)
+
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        #sleep(190)
+        u.swipe_ext("down", scale=0.8)
+        sleep(2)
+        u(resourceId="com.yoosee:id/msgLayout").wait(timeout=5)
+        u(resourceId="com.yoosee:id/msgLayout").click(timeout=5)
+        u(resourceId='com.yoosee:id/item_ll').wait(timeout=5)
+        del_name = u(resourceId="com.yoosee:id/allarm_time").get_text()
+        sleep(2)
+        u(resourceId="com.yoosee:id/item_ll").long_click()
+        u(text="多选").click(timeout=5)
+        u(resourceId='com.yoosee:id/iv_close').wait(timeout=5)
+        u(resourceId='com.yoosee:id/iv_close').click(timeout=5)
+        sleep(2)
+        assert not u(text='全选').exists, 'X掉退出全选'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_108(cls, u, video_camera_name):  # 智能守护多选显示“删除”、“多选”选项
+        u.app_clear('com.yoosee')  # 清除应用数据
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+        sleep(5)
+        u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
+        u(text="推送消息提醒").wait(timeout=10)
+        try:
+            u(text="消息通知说明").wait(timeout=10)
+        except:
+            u(resourceId="com.yoosee:id/iv_back").click(timeout=5)
+
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        #sleep(190)
+        u.swipe_ext("down", scale=0.8)
+        sleep(2)
+        u(resourceId="com.yoosee:id/msgLayout").wait(timeout=5)
+        u(resourceId="com.yoosee:id/msgLayout").click(timeout=5)
+        u(resourceId='com.yoosee:id/item_ll').wait(timeout=5)
+        sleep(1)
+        u(resourceId="com.yoosee:id/item_ll").long_click()
+        sleep(2)
+        assert u(text="删除").exists and u(text="多选").exists,'没有显示删除、多选选项'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_109(cls, u, video_camera_name):  # 智能守护选择多选，进入全选状态
+        u.app_clear('com.yoosee')  # 清除应用数据
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+        sleep(5)
+        u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
+        u(text="推送消息提醒").wait(timeout=10)
+        try:
+            u(text="消息通知说明").wait(timeout=10)
+        except:
+            u(resourceId="com.yoosee:id/iv_back").click(timeout=5)
+
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        #sleep(190)
+        u.swipe_ext("down", scale=0.8)
+        sleep(2)
+        u(resourceId="com.yoosee:id/msgLayout").wait(timeout=5)
+        u(resourceId="com.yoosee:id/msgLayout").click(timeout=5)
+        u(resourceId='com.yoosee:id/item_ll').wait(timeout=5)
+        del_name = u(resourceId="com.yoosee:id/allarm_time").get_text()
+        sleep(2)
+        u(resourceId="com.yoosee:id/item_ll").long_click()
+        sleep(2)
+        u(text="多选").click(timeout=5)
+        assert u(text='全选').wait(timeout=5), '不存在全选'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_110(cls, u, video_camera_name):  # 智能守护多选，全选取消则不会删除
+        u.app_clear('com.yoosee')  # 清除应用数据
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+        sleep(5)
+        u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
+        u(text="推送消息提醒").wait(timeout=10)
+        try:
+            u(text="消息通知说明").wait(timeout=10)
+        except:
+            u(resourceId="com.yoosee:id/iv_back").click(timeout=5)
+
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        #sleep(190)
+        u.swipe_ext("down", scale=0.8)
+        sleep(2)
+        u(resourceId="com.yoosee:id/msgLayout").wait(timeout=5)
+        u(resourceId="com.yoosee:id/msgLayout").click(timeout=5)
+        u(resourceId='com.yoosee:id/item_ll').wait(timeout=5)
+        sleep(1)
+        u(resourceId="com.yoosee:id/item_ll").long_click()
+        sleep(2)
+        u(text="多选").click(timeout=5)
+        if len(u(resourceId="com.yoosee:id/img_choose")) > 1:
+            u(resourceId="com.yoosee:id/cl_select_all").click(timeout=5)
+        u(resourceId="com.yoosee:id/cl_delete").click(timeout=5)
+        u.xpath(
+            '//*[@resource-id="android:id/content"]/android.widget.LinearLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[1]').click(timeout=5)
+        assert u(resourceId='com.yoosee:id/cl_delete').wait(timeout=5),'取消没有返回'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_111(cls, u, video_camera_name):  # 智能守护多选，全选取消则不会删除
+        u.app_clear('com.yoosee')  # 清除应用数据
+        SameOperation().app_go(u)
+        SameOperation().log_in(u, phone_num, phone_pwd)
+        sleep(5)
+        u(resourceId='com.yoosee:id/tv_contact').click(timeout=5)
+        u(text="推送消息提醒").wait(timeout=10)
+        try:
+            u(text="消息通知说明").wait(timeout=10)
+        except:
+            u(resourceId="com.yoosee:id/iv_back").click(timeout=5)
+
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        #sleep(190)
+        u.swipe_ext("down", scale=0.8)
+        sleep(2)
+        u(resourceId="com.yoosee:id/msgLayout").wait(timeout=5)
+        u(resourceId="com.yoosee:id/msgLayout").click(timeout=5)
+        u(resourceId='com.yoosee:id/item_ll').wait(timeout=5)
+        sleep(1)
+        u(resourceId="com.yoosee:id/item_ll").long_click()
+        sleep(2)
+        u(text="多选").click(timeout=5)
+        if len(u(resourceId="com.yoosee:id/img_choose")) > 1:
+            u(resourceId="com.yoosee:id/cl_select_all").click(timeout=5)
+        u(resourceId="com.yoosee:id/cl_delete").click(timeout=5)
+        u.xpath(
+            '//*[@resource-id="android:id/content"]/android.widget.LinearLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]').click(timeout=5)
+        assert u(resourceId='com.yoosee:id/tv_no_message').wait(timeout=5),'没有全部删除'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_112(cls, u, video_camera_name):  # 监控界面控制设备的转动方向
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        sleep(2)
+        u.xpath(
+            '//*[@resource-id="com.yoosee:id/lv_contact"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]/android.widget.LinearLayout[1]').click()
+        sleep(5)
+        control_iv = u(resourceId="com.yoosee:id/center_control_iv").center()
+        #print (control_iv)
+        # u(resourceId="com.yoosee:id/center_control_iv").swipe("left", steps=20)
+        # sleep(3)
+        # u(resourceId="com.yoosee:id/center_control_iv").swipe("right", steps=20)
+        # sleep(3)
+        # u(resourceId="com.yoosee:id/center_control_iv").swipe("up", steps=2)
+        # sleep(3)
+        # u(resourceId="com.yoosee:id/center_control_iv").swipe("down", steps=2)
+        # sleep(3)
+        # 左转
+        u(resourceId="com.yoosee:id/center_direction_view").click(offset=(0.1, 0.6))
+        sleep(3)
+        #右转
+        u(resourceId="com.yoosee:id/center_direction_view").click(offset=(0.9, 0.6))
+        sleep(3)
+        # 上转
+        u(resourceId="com.yoosee:id/center_direction_view").click(offset=(0.6, 0.1))
+        sleep(3)
+        #下转
+        u(resourceId="com.yoosee:id/center_direction_view").click(offset=(0.6, 0.9))
+        sleep(3)
+
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_113(cls, u, video_camera_name):  # 监控界面显示当前监控分辨率，无操作5秒后隐藏
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        sleep(2)
+        u.xpath(
+            '//*[@resource-id="com.yoosee:id/lv_contact"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]/android.widget.LinearLayout[1]').click()
+        sleep(5)
+        u(resourceId='com.yoosee:id/center_direction_view').wait(timeout=5)
+        assert u(resourceId="com.yoosee:id/tv_iot_definition").wait_gone(timeout=8.0),'超过5秒没有隐藏'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_114(cls, u, video_camera_name):  # 监控界面可以正常切换监控分辨率，画面画质有明显变化
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        sleep(2)
+        u.xpath(
+            '//*[@resource-id="com.yoosee:id/lv_contact"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]/android.widget.LinearLayout[1]').click()
+        sleep(5)
+        u(resourceId='com.yoosee:id/center_direction_view').wait(timeout=5)
+        u(resourceId="com.yoosee:id/tv_iot_definition").wait_gone(timeout=8.0)
+        u.xpath('//*[@resource-id="android:id/content"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[1]').click(timeout=5)
+        sleep(1)
+        if u(text="流畅").exists:
+            u(resourceId="com.yoosee:id/tv_iot_definition").click(timeout=5)
+            u(text="高清").click(timeout=5)
+            sleep(2)
+        sleep(1)
+        u(resourceId="com.yoosee:id/tv_iot_definition").wait_gone(timeout=8.0)
+        u.screenshot("clear_1.png")
+        br_1 = SameOperation().getImageVar('clear_1.png')
+        print (br_1)
+        u.xpath('//*[@resource-id="android:id/content"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[1]').click(timeout=5)
+        sleep(1)
+        u(resourceId="com.yoosee:id/tv_iot_definition").click(timeout=5)
+        u(text="流畅").click(timeout=5)
+        sleep(2)
+        u(resourceId="com.yoosee:id/tv_iot_definition").wait_gone(timeout=8.0)
+        sleep(1)
+        u.screenshot("clear_2.png")
+        br_2 = SameOperation().getImageVar('clear_2.png')
+        print(br_2)
+        assert br_2 < br_1,'画质没有高清切换至流畅'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_115(cls, u, video_camera_name):  # 监控界面保存上一次监控的分辨率
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        sleep(2)
+        u.xpath(
+            '//*[@resource-id="com.yoosee:id/lv_contact"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]/android.widget.LinearLayout[1]').click()
+        sleep(5)
+        u(resourceId='com.yoosee:id/center_direction_view').wait(timeout=5)
+        u(resourceId="com.yoosee:id/tv_iot_definition").wait_gone(timeout=8.0)
+        u.xpath('//*[@resource-id="android:id/content"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[1]').click(timeout=5)
+        sleep(1)
+        if u(text="高清").exists or u(text="超清").exists:
+            u(resourceId="com.yoosee:id/tv_iot_definition").click(timeout=5)
+            u(text="流畅").click(timeout=5)
+            sleep(2)
+        sleep(1)
+        u(resourceId="com.yoosee:id/iv_set").click(timeout=5)
+        sleep(2)
+        u(resourceId="com.yoosee:id/back_btn").click(timeout=5)
+        sleep(2)
+        u(resourceId="com.yoosee:id/tv_iot_definition").wait_gone(timeout=8.0)
+        u.xpath('//*[@resource-id="android:id/content"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[1]').click(timeout=5)
+        sleep(1)
+        assert u(text="流畅").wait(timeout=5),'未保存上一次监控的分辨率'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_116(cls, u, video_camera_name):  # 监控界面可以超清切换到高清，画面画质有明显变化
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        sleep(2)
+        u.xpath(
+            '//*[@resource-id="com.yoosee:id/lv_contact"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[2]/android.widget.LinearLayout[1]').click()
+        sleep(5)
+        u(resourceId='com.yoosee:id/center_direction_view').wait(timeout=5)
+        u(resourceId="com.yoosee:id/tv_iot_definition").wait_gone(timeout=8.0)
+        u.xpath('//*[@resource-id="android:id/content"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[1]').click(timeout=5)
+        sleep(1)
+        if not u(text="超清").exists:
+            u(resourceId="com.yoosee:id/tv_iot_definition").click(timeout=5)
+            u(text="超清").click(timeout=5)
+            sleep(2)
+        sleep(1)
+        u(resourceId="com.yoosee:id/tv_iot_definition").wait_gone(timeout=8.0)
+        u.screenshot("clear_1.png")
+        br_1 = SameOperation().getImageVar('clear_1.png')
+        print (br_1)
+        u.xpath('//*[@resource-id="android:id/content"]/android.widget.RelativeLayout[1]/android.widget.LinearLayout[1]/android.widget.RelativeLayout[1]').click(timeout=5)
+        sleep(1)
+        u(resourceId="com.yoosee:id/tv_iot_definition").click(timeout=5)
+        u(text="高清").click(timeout=5)
+        sleep(2)
+        u(resourceId="com.yoosee:id/tv_iot_definition").wait_gone(timeout=8.0)
+        sleep(1)
+        u.screenshot("clear_2.png")
+        br_2 = SameOperation().getImageVar('clear_2.png')
+        print(br_2)
+        assert br_1 > br_2,'画质没有超清切换至高清'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_117(cls, u, video_camera_name):  # 智能守护整个视频播放完毕点击重播可重新播放该视频
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        sleep(2)
+        u(resourceId="com.yoosee:id/icon_keyboard").click(timeout=5)
+        u(resourceId='com.yoosee:id/item_ll').wait(timeout=5)
+        u(resourceId="com.yoosee:id/pause_iv").click(timeout=5)
+        u(resourceId='com.yoosee:id/btn_replay_big').wait(timeout=300)
+        u(resourceId='com.yoosee:id/btn_replay_big').click(timeout=5)
+        assert u(resourceId='com.yoosee:id/btn_replay_big').wait_gone(timeout=5),'不可以重播'
+        SameOperation().quit_app(u)
+
+    @classmethod
+    def jwt_118(cls, u, video_camera_name):  # 智能守护隐藏/显示常用功能按钮
+        SameOperation().app_go(u)
+        if u(resourceId='com.yoosee:id/setting_more_iv').wait(timeout=5):
+            pass
+        else:
+            SameOperation().add_wired(u, video_camera_name)
+            u.press('back')
+        if u(resourceId="com.yoosee:id/ll_defence_state").wait_gone(timeout=3.0):
+            u.swipe_ext("down", scale=0.8)
+        sleep(2)
+        u(resourceId="com.yoosee:id/icon_keyboard").click(timeout=5)
+        if u(resourceId='com.yoosee:id/item_ll').wait(timeout=5):
+            sleep(2)
+            u(resourceId="com.yoosee:id/view_img_video").click(timeout=5)
+            sleep(2)
+            assert not u(resourceId='com.yoosee:id/fun_down').exists,'没有隐藏常用功能按钮'
         SameOperation().quit_app(u)

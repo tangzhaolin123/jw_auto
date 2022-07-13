@@ -449,7 +449,8 @@ class SanAppLog:
 class ResizeImage:
 	def resize_image(self,file, width, height, type):
 		img = Image.open(file)
-		out = img.resize((width, height), Image.ANTIALIAS)  # resize image with high-quality
+		#out = img.resize((width, height), Image.ANTIALIAS)  # resize image with high-quality
+		out = img.resize((width, height), Image.Resampling.LANCZOS)
 		out.save(file, type)
 
 class FileUp:
@@ -554,8 +555,9 @@ if __name__ == '__main__':
 	while i<int(rounds):
 		is_execute = []
 		old_appid = config.get('sec1', 'APP的id')
-		new_appid = AutoUpgrade().app_id()
+		#new_appid = AutoUpgrade().app_id()
 		if execute_or_not == '是':
+			new_appid = AutoUpgrade().app_id()
 			print ("远程升级版本")
 			if old_appid != new_appid:
 				AutoUpgrade().down_app()
@@ -588,7 +590,7 @@ if __name__ == '__main__':
 			u.watcher.when("可以尝试上下左右拖动画面").click()
 			u.watcher.when("深入了解").click()
 			u.watcher.when("消息通知说明").press("back")
-			#u.watcher.when("取消推送").press("back")
+			u.watcher.when("close").click()
 			u.watcher.when('继续安装').click()
 			u.watcher.when("您将不再接收此设备的报警推送").press("back")
 
@@ -861,6 +863,10 @@ if __name__ == '__main__':
 					u.uiautomator.start()
 			#关闭监视
 			# u.watcher.stop()
+			try:
+				FileUp().main()
+			except:
+				pass
 			u.watcher.reset()
 			# 控制随时输出报告
 			config.read(cfgpath, encoding="gb2312")
@@ -941,10 +947,10 @@ if __name__ == '__main__':
 		# if i == 20:
 		DingMessage().dingtalk_robot(str(case_len),str(count_success),str(count_case_fail),report_url)
 	# u.app_uninstall('com.yoosee')
-		try:
-			FileUp().main()
-		except:
-			pass
+	# 	try:
+	# 		FileUp().main()
+	# 	except:
+	# 		pass
 		if do_not_run == '否':
 			break
 		elif count_case_fail >=20:
